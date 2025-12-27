@@ -1,0 +1,56 @@
+---
+title: Row Selection
+description: Row selection and bulk actions feature.
+---
+
+import { LuxTableSelectionDemo } from "../../components/lux-table-demo";
+
+# Row Selection
+
+LuxTable comes with a rich row selection feature. Single or multiple selection can be made, all rows can be selected.
+
+<LuxTableSelectionDemo />
+
+## Usage
+
+To enable row selection, simply specify the `selection` mode under `options`. Optionally, you can capture selected rows with `onSelectedRowsChange` callback.
+
+```tsx
+<LuxTable
+  data={data}
+  columns={columns}
+  // 1. Determine selection mode: 'single' or 'multiple'
+  options={{
+    selection: "multiple",
+  }}
+  // 2. Runs when selected data changes
+  onSelectedRowsChange={(selectedRows) => {
+    console.log("Selected records:", selectedRows);
+  }}
+/>
+```
+
+## Options
+
+| Feature | Type | Default | Description |
+|---|---|---|---|
+| `selection` | `'single' \| 'multiple' \| 'none'` | `'none'` | Determines selection mode. |
+| `showSelectionCheckbox` | `boolean` | `true` | Shows or hides the checkbox column. |
+
+### Controlled State (Optional)
+
+If you want to manage the selection state externally, you can use `rowSelection` and `onRowSelectionChange` props.
+
+```tsx
+import { RowSelectionState } from "luxtable";
+
+// State
+const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+
+<LuxTable
+  // ...
+  rowSelection={rowSelection}
+  onRowSelectionChange={setRowSelection}
+  options={{ selection: "multiple" }}
+/>
+```

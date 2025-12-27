@@ -25,6 +25,7 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
         <MDX
           components={getMDXComponents({
             // this allows you to link to other pages with relative file paths
+            // @ts-expect-error - Type mismatch between fumadocs and next
             a: createRelativeLink(source, page),
           })}
         />
