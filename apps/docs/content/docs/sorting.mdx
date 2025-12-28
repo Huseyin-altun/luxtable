@@ -7,7 +7,7 @@ import { LuxTableSortingDemo } from "../../components/lux-table-demo";
 
 # Sorting
 
-LuxTable provides built-in sorting functionality. Simply click on column headers to sort data.
+LuxTable provides built-in sorting functionality. Simply click on column headers to access sorting options.
 
 ## Live Demo
 
@@ -117,10 +117,23 @@ export default function App() {
 
 ---
 
-## Sorting Indicators
+## Sorting Indicators & Actions
 
-When a column is sorted, visual indicators (arrows) appear in the column header:
-- **↑** - Ascending (A→Z, 0→9)
-- **↓** - Descending (Z→A, 9→0)
+### Quick Sorting
+Click directly on the column header to toggle sorting:
+- **First click**: Sort ascending (↑)
+- **Second click**: Sort descending (↓)
+- **Third click**: Back to ascending
 
-Click the column header to cycle through: No Sort → Ascending → Descending → No Sort
+### Column Actions Menu
+Hover over a column header to reveal the actions menu (⋮). The menu includes:
+- **Sort Ascending** - Sort A→Z or 0→9
+- **Sort Descending** - Sort Z→A or 9→0
+- **Clear sorting** - Remove sorting (only when sorted)
+- **Hide column** - Hide the column from view
+
+### Visual Indicators
+- **↑** (Arrow Up) - Currently sorted ascending
+- **↓** (Arrow Down) - Currently sorted descending
+- **⇅** (Chevrons) - Sortable but not currently sorted
+

@@ -246,19 +246,11 @@ export function LuxTable<TData>({
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
-                                    const canSort = header.column.getCanSort();
-                                    const sorted = header.column.getIsSorted();
-                                    // Sorting enabled by default (if undefined or true)
-                                    const sortingEnabled = options?.sorting !== false;
-                                    const isSortable = canSort && sortingEnabled;
                                     const isSelectionColumn = header.id === "__selection__";
 
                                     return (
                                         <TableHead
                                             key={header.id}
-                                            sortable={isSortable && !isSelectionColumn}
-                                            sorted={sorted}
-                                            onClick={isSortable && !isSelectionColumn ? header.column.getToggleSortingHandler() : undefined}
                                             style={isSelectionColumn ? { width: 40, padding: "0 12px" } : undefined}
                                         >
                                             {header.isPlaceholder
@@ -270,6 +262,7 @@ export function LuxTable<TData>({
                                         </TableHead>
                                     );
                                 })}
+
                             </TableRow>
                         ))}
 

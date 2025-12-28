@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { cn } from "../../lib/utils";
-import { SortIcon } from "./sort-icon";
+
 
 // ============================================================================
 // Table Root
@@ -98,37 +98,28 @@ TableRow.displayName = "TableRow";
 // Table Head (th)
 // ============================================================================
 
-export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
-    sortable?: boolean;
-    sorted?: "asc" | "desc" | false;
-}
-
-const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
-    ({ className, children, sortable = false, sorted, onClick, ...props }, ref) => {
-        return (
-            <th
-                ref={ref}
-                className={cn(
-                    "h-10 px-4 text-left align-middle font-medium text-slate-500 dark:text-slate-400",
-                    "[&:has([role=checkbox])]:pr-0",
-                    sortable && "cursor-pointer select-none hover:text-slate-700 dark:hover:text-slate-200",
-                    className
-                )}
-                onClick={onClick}
-                aria-sort={sorted === "asc" ? "ascending" : sorted === "desc" ? "descending" : undefined}
-                {...props}
-            >
-                <div className="flex items-center gap-2">
-                    <span>{children}</span>
-                    {sortable && (
-                        <SortIcon direction={sorted} />
-                    )}
-                </div>
-            </th>
-        );
-    }
-);
+const TableHead = React.forwardRef<
+    HTMLTableCellElement,
+    React.ThHTMLAttributes<HTMLTableCellElement>
+>(({ className, children, ...props }, ref) => {
+    return (
+        <th
+            ref={ref}
+            className={cn(
+                "h-10 px-4 text-left align-middle font-medium text-slate-500 dark:text-slate-400",
+                "[&:has([role=checkbox])]:pr-0",
+                "group", // Enable group-hover for action buttons
+                className
+            )}
+            {...props}
+        >
+            {children}
+        </th>
+    );
+});
 TableHead.displayName = "TableHead";
+
+
 
 // ============================================================================
 // Table Cell (td)

@@ -7,7 +7,7 @@ import { LuxTableSortingDemo } from "../../components/lux-table-demo";
 
 # Sıralama
 
-LuxTable yerleşik sıralama işlevselliği sağlar. Verileri sıralamak için sütun başlıklarına tıklamanız yeterli.
+LuxTable yerleşik sıralama işlevselliği sağlar. Sıralama seçeneklerine erişmek için sütun başlıklarına tıklamanız yeterli.
 
 ## Canlı Demo
 
@@ -117,10 +117,23 @@ export default function App() {
 
 ---
 
-## Sıralama Göstergeleri
+## Sıralama Göstergeleri ve Aksiyonlar
 
-Bir sütun sıralandığında, sütun başlığında görsel göstergeler (oklar) görünür:
-- **↑** - Artan (A→Z, 0→9)
-- **↓** - Azalan (Z→A, 9→0)
+### Hızlı Sıralama
+Sıralamayı değiştirmek için doğrudan sütun başlığına tıklayın:
+- **İlk tıklama**: Artan sıralama (↑)
+- **İkinci tıklama**: Azalan sıralama (↓)
+- **Üçüncü tıklama**: Tekrar artan
 
-Sütun başlığına tıklayarak döngü yapın: Sıralama Yok → Artan → Azalan → Sıralama Yok
+### Sütun Aksiyonları Menüsü
+Aksiyon menüsünü (⋮) görmek için sütun başlığının üzerine gelin. Menü şunları içerir:
+- **Artan Sırala** - A→Z veya 0→9 sırala
+- **Azalan Sırala** - Z→A veya 9→0 sırala
+- **Sıralamayı temizle** - Sıralamayı kaldır (yalnızca sıralandığında)
+- **Sütunu gizle** - Sütunu görünümden kaldır
+
+### Görsel Göstergeler
+- **↑** (Yukarı Ok) - Şu anda artan sıralı
+- **↓** (Aşağı Ok) - Şu anda azalan sıralı
+- **⇅** (Çift Ok) - Sıralanabilir ama şu anda sıralı değil
+

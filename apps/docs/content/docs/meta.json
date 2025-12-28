@@ -9,10 +9,10 @@
     "sorting",
     "pagination",
     "row-selection",
+    "row-actions",
     "---Customization---",
     "cell-renderers",
     "column-actions",
-    "row-actions",
     "---API---",
     "api-reference"
   ]

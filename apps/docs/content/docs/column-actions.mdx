@@ -13,7 +13,9 @@ When you use `createColumnHelper` and provide a string as the header, the column
 
 - **Sort Ascending** - Sort A→Z or 0→9
 - **Sort Descending** - Sort Z→A or 9→0
+- **Clear sorting** - Remove sorting (only visible when sorted)
 - **Hide Column** - Remove the column from view
+
 
 ```tsx
 import { createColumnHelper } from "luxtable";
@@ -113,5 +115,6 @@ export default function App() {
 | Feature | Description |
 |---------|-------------|
 | **Sorting** | Click "Asc" or "Desc" to sort the table by that column |
+| **Clear Sorting** | Click "Clear sorting" to remove the current sort |
 | **Hiding** | Click "Hide" to remove the column from view |
 | **Visual Indicators** | Arrow icons show current sort direction |
