@@ -1,0 +1,154 @@
+---
+title: Row Actions
+description: Add interactive actions to your table rows
+---
+
+import { LuxTableActionsDemo } from "../../components/lux-table-demo";
+
+# Row Actions
+
+Add dropdown menus, buttons, or any interactive elements to your table rows using `columnHelper.action()`.
+
+## Live Demo
+
+<LuxTableActionsDemo />
+
+## Basic Usage
+
+Use the `action()` method from columnHelper to create an actions column:
+
+```tsx
+import { LuxTable, createColumnHelper } from "luxtable";
+import { MoreHorizontal, Edit, Trash } from "lucide-react";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger,
+  Button 
+} from "luxtable";
+
+const columnHelper = createColumnHelper<Employee>();
+
+const columns = [
+  columnHelper.accessor("name", { header: "Name" }),
+  columnHelper.accessor("email", { header: "Email" }),
+  
+  // Actions Column
+  columnHelper.action({
+    cell: ({ row }) => {
+      const employee = row.original;
+      
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => handleEdit(employee)}>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => handleDelete(employee)}
+              className="text-red-600"
+            >
+              <Trash className="mr-2 h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  }),
+];
+```
+
+---
+
+## What action() Does
+
+The `action()` method is a convenience wrapper that:
+
+1. Creates a column with no accessor (display-only)
+2. Disables sorting for the column
+3. Disables filtering for the column
+4. Sets a default header of empty string
+
+It's equivalent to:
+
+```tsx
+columnHelper.display({
+  id: "actions",
+  header: "",
+  enableSorting: false,
+  enableColumnFilter: false,
+  cell: ({ row }) => { /* your actions */ },
+});
+```
+
+---
+
+## Accessing Row Data
+
+Use `row.original` inside the cell function to access the full data object:
+
+```tsx
+columnHelper.action({
+  cell: ({ row }) => {
+    const data = row.original; // Full row data object
+    
+    return (
+      <div>
+        <button onClick={() => handleView(data.id)}>View</button>
+        <button onClick={() => handleEdit(data)}>Edit</button>
+      </div>
+    );
+  },
+});
+```
+
+---
+
+## Simple Button Actions
+
+You don't have to use dropdowns. Simple buttons work too:
+
+```tsx
+columnHelper.action({
+  cell: ({ row }) => (
+    <div className="flex gap-2">
+      <button 
+        onClick={() => handleView(row.original)}
+        className="text-blue-600 hover:underline"
+      >
+        View
+      </button>
+      <button 
+        onClick={() => handleEdit(row.original)}
+        className="text-green-600 hover:underline"
+      >
+        Edit
+      </button>
+      <button 
+        onClick={() => handleDelete(row.original)}
+        className="text-red-600 hover:underline"
+      >
+        Delete
+      </button>
+    </div>
+  ),
+});
+```
+
+---
+
+## Tips
+
+- **Access Row Data**: Use `row.original` to get the full data object for that row
+- **Positioning**: Use `align="end"` on `DropdownMenuContent` to prevent overflow on the right side
+- **Accessibility**: Include screen reader text for icon-only buttons
+- **Styling**: Style destructive actions (like delete) with red color for clarity

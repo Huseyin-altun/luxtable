@@ -1,0 +1,19 @@
+{
+  "title": "Dokümantasyon",
+  "pages": [
+    "---Başlangıç---",
+    "index",
+    "quick-start",
+    "---Özellikler---",
+    "column-filtering",
+    "sorting",
+    "pagination",
+    "row-selection",
+    "---Özelleştirme---",
+    "cell-renderers",
+    "column-actions",
+    "row-actions",
+    "---API---",
+    "api-reference"
+  ]
+}

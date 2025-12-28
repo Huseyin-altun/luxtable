@@ -1,0 +1,126 @@
+---
+title: Sorting
+description: Sort your table data by clicking column headers
+---
+
+import { LuxTableSortingDemo } from "../../components/lux-table-demo";
+
+# Sorting
+
+LuxTable provides built-in sorting functionality. Simply click on column headers to sort data.
+
+## Live Demo
+
+<LuxTableSortingDemo />
+
+## Basic Usage
+
+Enable sorting with a single prop:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ sorting: true }}
+/>
+```
+
+All columns are sortable by default when sorting is enabled.
+
+---
+
+## Disable Sorting for Specific Columns
+
+You can disable sorting on specific columns:
+
+```tsx
+const columns = [
+  columnHelper.accessor("name", { 
+    header: "Name",
+    enableSorting: true,  // Default: true
+  }),
+  
+  columnHelper.accessor("actions", {
+    header: "Actions",
+    enableSorting: false, // 👈 No sorting for this column
+  }),
+];
+```
+
+---
+
+## Controlled Sorting
+
+For advanced use cases, you can control the sorting state externally:
+
+```tsx
+import { useState } from "react";
+import { LuxTable, SortingState } from "luxtable";
+
+export default function App() {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  return (
+    <LuxTable 
+      data={data} 
+      columns={columns} 
+      sorting={sorting}
+      onSortingChange={setSorting}
+      options={{ sorting: true }} 
+    />
+  );
+}
+```
+
+### SortingState Format
+
+The sorting state is an array of sort objects:
+
+```tsx
+// Single column sorting
+const sorting = [{ id: "name", desc: false }]; // Ascending by name
+
+// Multi-column sorting (if enabled)
+const sorting = [
+  { id: "department", desc: false },
+  { id: "name", desc: true },
+];
+```
+
+---
+
+## Default Sort
+
+You can set an initial sort by providing a default sorting state:
+
+```tsx
+import { useState } from "react";
+import { LuxTable, SortingState } from "luxtable";
+
+export default function App() {
+  // Start with name column sorted ascending
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "name", desc: false }
+  ]);
+
+  return (
+    <LuxTable 
+      data={data} 
+      columns={columns} 
+      sorting={sorting}
+      onSortingChange={setSorting}
+      options={{ sorting: true }} 
+    />
+  );
+}
+```
+
+---
+
+## Sorting Indicators
+
+When a column is sorted, visual indicators (arrows) appear in the column header:
+- **↑** - Ascending (A→Z, 0→9)
+- **↓** - Descending (Z→A, 9→0)
+
+Click the column header to cycle through: No Sort → Ascending → Descending → No Sort

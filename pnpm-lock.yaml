@@ -94,11 +94,17 @@ importers:
         specifier: ^2.0.0
         version: 2.6.0
     devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.7
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.3(@types/react@19.2.7)
       react:
-        specifier: ^19.2.3
+        specifier: ^19.0.0
         version: 19.2.3
       react-dom:
-        specifier: ^19.2.3
+        specifier: ^19.0.0
         version: 19.2.3(react@19.2.3)
       tailwindcss:
         specifier: ^3.4.0
@@ -107,7 +113,7 @@ importers:
         specifier: ^8.0.0
         version: 8.5.1(jiti@1.21.7)(postcss@8.5.6)(typescript@5.9.3)
       typescript:
-        specifier: ^5.9.3
+        specifier: ^5.7.0
         version: 5.9.3
 
 packages:

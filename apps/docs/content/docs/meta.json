@@ -1,0 +1,19 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "---Getting Started---",
+    "index",
+    "quick-start",
+    "---Features---",
+    "column-filtering",
+    "sorting",
+    "pagination",
+    "row-selection",
+    "---Customization---",
+    "cell-renderers",
+    "column-actions",
+    "row-actions",
+    "---API---",
+    "api-reference"
+  ]
+}

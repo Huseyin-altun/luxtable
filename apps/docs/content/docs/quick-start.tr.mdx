@@ -1,0 +1,121 @@
+---
+title: Hızlı Başlangıç
+description: LuxTable ile dakikalar içinde başlayın
+---
+
+import { LuxTableDemo, LuxTableAutoDemo } from "../../components/lux-table-demo";
+
+# Hızlı Başlangıç
+
+LuxTable ile birkaç dakika içinde çalışmaya başlayın.
+
+## Kurulum
+
+```bash
+npm install luxtable
+# veya
+yarn add luxtable
+# veya
+pnpm add luxtable
+```
+
+---
+
+## Yöntem 1: createColumnHelper (Önerilen)
+
+En esnek yöntem. Sütunları tek tek tanımlayın. **Cell belirtmezseniz değer otomatik gösterilir**:
+
+<LuxTableDemo />
+
+```tsx
+"use client";
+
+import { LuxTable, createColumnHelper, StatusCell, ProgressCell } from "luxtable";
+
+type Person = {
+  firstName: string;
+  lastName: string;
+  age: number;
+  status: string;
+  progress: number;
+};
+
+const data: Person[] = [
+  { firstName: "Ahmet", lastName: "Yılmaz", age: 24, status: "Aktif", progress: 50 },
+  { firstName: "Ayşe", lastName: "Demir", age: 32, status: "Beklemede", progress: 80 },
+];
+
+const columnHelper = createColumnHelper<Person>();
+
+const columns = [
+  // 🎉 Cell tanımına gerek yok - otomatik render!
+  columnHelper.accessor("firstName", { header: "Ad" }),
+  columnHelper.accessor("lastName", { header: "Soyad" }),
+  columnHelper.accessor("age", { header: "Yaş" }),
+  // Özel görünüm istediğiniz sütunlarda cell kullanın
+  columnHelper.accessor("status", {
+    header: "Durum",
+    cell: (info) => <StatusCell value={info.getValue()} />,
+  }),
+  columnHelper.accessor("progress", {
+    header: "İlerleme",
+    cell: (info) => <ProgressCell value={info.getValue()} showLabel />,
+  }),
+];
+
+export function MyTable() {
+  return <LuxTable data={data} columns={columns} options={{ pagination: true }} />;
+}
+```
+
+---
+
+## Yöntem 2: createColumnsFromData - JSON'dan Otomatik
+
+**En hızlı yöntem!** JSON verinizi verin, sütunlar otomatik oluşturulur. Sadece özel render istediğiniz yerleri belirtin:
+
+<LuxTableAutoDemo />
+
+```tsx
+"use client";
+
+import { LuxTable, createColumnsFromData, StatusCell, ProgressCell } from "luxtable";
+
+const data = [
+  { firstName: "Ahmet", lastName: "Yılmaz", age: 24, status: "Aktif", progress: 50 },
+  { firstName: "Ayşe", lastName: "Demir", age: 32, status: "Beklemede", progress: 80 },
+];
+
+// 🚀 Sütunlar tek satırda hazır!
+const columns = createColumnsFromData(data, {
+  // Özel başlıklar (isteğe bağlı - camelCase otomatik Title Case'e çevrilir)
+  headers: {
+    firstName: "Ad",
+    lastName: "Soyad",
+    age: "Yaş",
+    status: "Durum",
+    progress: "İlerleme",
+  },
+  // Sadece özel görünüm gereken sütunları belirtin
+  cells: {
+    status: (info) => <StatusCell value={info.getValue() as string} />,
+    progress: (info) => <ProgressCell value={info.getValue() as number} showLabel />,
+  },
+  // İstenmeyen sütunları gizleyin (isteğe bağlı)
+  // exclude: ["id", "createdAt"],
+});
+
+export function MyTable() {
+  return <LuxTable data={data} columns={columns} />;
+}
+```
+
+---
+
+## Sonraki Adımlar
+
+<Cards>
+  <Card title="Hücre Bileşenleri" href="/tr/docs/cell-renderers" description="Hazır hücre bileşenleri" />
+  <Card title="Sütun Filtreleme" href="/tr/docs/column-filtering" description="Sütunlara filtre ekleyin" />
+  <Card title="Satır Seçimi" href="/tr/docs/row-selection" description="Checkbox ile satır seçin" />
+</Cards>

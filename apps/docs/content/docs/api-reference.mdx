@@ -1,0 +1,234 @@
+---
+title: API Reference
+description: Complete API documentation for LuxTable
+---
+
+# API Reference
+
+Complete documentation of all LuxTable components, props, and utilities.
+
+## LuxTable Component
+
+The main table component.
+
+```tsx
+import { LuxTable } from "luxtable";
+
+<LuxTable
+  data={data}
+  columns={columns}
+  options={options}
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `data` | `T[]` | Required | Array of data objects to display |
+| `columns` | `ColumnDef<T>[]` | Required | Column definitions |
+| `options` | `LuxTableOptions` | `{}` | Table options (see below) |
+| `className` | `string` | - | Additional CSS classes |
+
+### Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `pagination` | `boolean` | `false` | Enable pagination |
+| `pageSize` | `number` | `10` | Rows per page |
+| `sorting` | `boolean` | `false` | Enable sorting |
+| `filtering` | `boolean` | `false` | Enable column filtering |
+| `selection` | `'none' \| 'single' \| 'multiple'` | `'none'` | Row selection mode |
+| `showSelectionCheckbox` | `boolean` | `true` | Show/hide selection checkboxes |
+
+### Controlled State Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `sorting` | `SortingState` | Controlled sorting state |
+| `onSortingChange` | `(state: SortingState) => void` | Sorting change callback |
+| `rowSelection` | `RowSelectionState` | Controlled selection state |
+| `onRowSelectionChange` | `(state: RowSelectionState) => void` | Selection change callback |
+| `columnVisibility` | `VisibilityState` | Column visibility state |
+| `onColumnVisibilityChange` | `(state: VisibilityState) => void` | Visibility change callback |
+| `onSelectedRowsChange` | `(rows: T[]) => void` | Selected rows data callback |
+
+---
+
+## createColumnHelper
+
+Type-safe column definition helper.
+
+```tsx
+import { createColumnHelper } from "luxtable";
+
+const columnHelper = createColumnHelper<MyDataType>();
+```
+
+### Methods
+
+#### accessor()
+
+Create a column that accesses data from a specific field.
+
+```tsx
+columnHelper.accessor("fieldName", {
+  header: "Header Title",
+  cell: (info) => info.getValue(),
+  enableSorting: true,
+  enableColumnFilter: true,
+  meta: { filterVariant: "text" | "select" },
+});
+```
+
+#### display()
+
+Create a display-only column (no data accessor).
+
+```tsx
+columnHelper.display({
+  id: "custom",
+  header: "Custom",
+  cell: ({ row }) => <CustomComponent data={row.original} />,
+});
+```
+
+#### action()
+
+Create an actions column (pre-configured display column).
+
+```tsx
+columnHelper.action({
+  cell: ({ row }) => <ActionsMenu data={row.original} />,
+});
+```
+
+---
+
+## createColumnsFromData
+
+Auto-generate columns from data structure.
+
+```tsx
+import { createColumnsFromData } from "luxtable";
+
+const columns = createColumnsFromData(data, {
+  headers: { fieldName: "Header Title" },
+  cells: { fieldName: (info) => <Custom value={info.getValue()} /> },
+  exclude: ["hiddenField"],
+});
+```
+
+### Options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `headers` | `Record<string, string>` | Custom header titles |
+| `cells` | `Record<string, CellFn>` | Custom cell renderers |
+| `exclude` | `string[]` | Fields to exclude |
+
+---
+
+## Cell Renderers
+
+### StatusCell
+
+```tsx
+import { StatusCell } from "luxtable";
+
+<StatusCell 
+  value="Active" 
+  colors={{
+    Active: { bg: "bg-green-100", text: "text-green-800" },
+  }}
+/>
+```
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `string` | Required | Status value |
+| `colors` | `Record<string, {bg, text}>` | Default colors | Custom color mapping |
+| `className` | `string` | - | Additional classes |
+
+### ProgressCell
+
+```tsx
+import { ProgressCell } from "luxtable";
+
+<ProgressCell value={75} showLabel barColor="bg-blue-500" />
+```
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `number` | Required | Progress value (0-100) |
+| `showLabel` | `boolean` | `false` | Show percentage label |
+| `barColor` | `string` | `"bg-primary"` | Bar color class |
+| `bgColor` | `string` | `"bg-secondary"` | Background color class |
+
+### DateCell
+
+```tsx
+import { DateCell } from "luxtable";
+
+<DateCell value={new Date()} format="short" locale="en-US" />
+```
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `Date \| string` | Required | Date value |
+| `format` | `'short' \| 'long' \| 'relative'` | `'short'` | Date format |
+| `locale` | `string` | `'en-US'` | Locale for formatting |
+
+### CurrencyCell
+
+```tsx
+import { CurrencyCell } from "luxtable";
+
+<CurrencyCell value={1500} currency="USD" locale="en-US" />
+```
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `number` | Required | Numeric value |
+| `currency` | `string` | `'USD'` | Currency code |
+| `locale` | `string` | `'en-US'` | Locale for formatting |
+
+### BooleanCell
+
+```tsx
+import { BooleanCell } from "luxtable";
+
+<BooleanCell value={true} trueLabel="Yes" falseLabel="No" />
+```
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `boolean` | Required | Boolean value |
+| `trueLabel` | `string` | `'Yes'` | Label for true |
+| `falseLabel` | `string` | `'No'` | Label for false |
+
+### CopyableCell
+
+```tsx
+import { CopyableCell } from "luxtable";
+
+<CopyableCell value="text-to-copy" />
+```
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `string` | Required | Value to display and copy |
+
+---
+
+## Type Exports
+
+```tsx
+import type {
+  SortingState,
+  RowSelectionState,
+  VisibilityState,
+  PaginationState,
+  ColumnDef,
+} from "luxtable";
+```

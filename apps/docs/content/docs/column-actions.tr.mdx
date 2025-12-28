@@ -1,0 +1,117 @@
+---
+title: Sütun İşlemleri
+description: Sütun işlemleri için yerleşik dropdown menü
+---
+
+# Sütun İşlemleri
+
+LuxTable, sıralama ve sütun gizleme gibi yaygın işlemler için her sütun başlığında yerleşik bir dropdown menü sağlar.
+
+## Nasıl Çalışır
+
+`createColumnHelper` kullandığınızda ve başlık olarak bir string verdiğinizde, sütun otomatik olarak şunları içeren bir dropdown menü alır:
+
+- **Artan Sırala** - A→Z veya 0→9 sırala
+- **Azalan Sırala** - Z→A veya 9→0 sırala
+- **Sütunu Gizle** - Sütunu görünümden kaldır
+
+```tsx
+import { createColumnHelper } from "luxtable";
+
+const columnHelper = createColumnHelper<User>();
+
+const columns = [
+  // ✅ Bu sütun otomatik olarak dropdown menüye sahip olacak
+  columnHelper.accessor("isim", {
+    header: "Tam İsim",
+  }),
+  
+  // ✅ Bu da çalışır (başlık accessor adından türetilir)
+  columnHelper.accessor("yas"),
+];
+```
+
+---
+
+## Dropdown'ı Devre Dışı Bırakma
+
+Dropdown menüyü devre dışı bırakmak için, başlık için string yerine bir fonksiyon verin:
+
+```tsx
+// ❌ Bu sütun dropdown menüye sahip OLMAYACAK
+columnHelper.accessor("email", {
+  header: () => <div className="text-red-500">Özel Başlık</div>,
+});
+```
+
+---
+
+## LuxDataTableColumnHeader'ı Manuel Kullanma
+
+Başlığı özelleştirmek istiyorsanız ama yine de dropdown işlevselliğini kullanmak istiyorsanız:
+
+```tsx
+import { LuxDataTableColumnHeader } from "luxtable";
+
+columnHelper.accessor("rol", {
+  header: ({ column }) => (
+    <LuxDataTableColumnHeader column={column} title="Kullanıcı Rolü" />
+  ),
+});
+```
+
+---
+
+## Gizli Sütunları Geri Yükleme
+
+Bir sütun gizlendiğinde, onu tekrar göstermenin bir yoluna ihtiyacınız olacak. Bunu sütunları göster/gizle yapan özel bir UI bileşeni ile yapabilirsiniz:
+
+```tsx
+import { useState } from "react";
+import { LuxTable, VisibilityState } from "luxtable";
+
+export default function App() {
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  const toggleColumn = (columnId: string) => {
+    setColumnVisibility((prev) => ({
+      ...prev,
+      [columnId]: !prev[columnId],
+    }));
+  };
+
+  return (
+    <div>
+      {/* Sütun görünürlük toggle butonları */}
+      <div className="mb-4 flex gap-2">
+        {["isim", "email", "durum"].map((col) => (
+          <button
+            key={col}
+            onClick={() => toggleColumn(col)}
+            className={columnVisibility[col] === false ? "opacity-50" : ""}
+          >
+            {col}
+          </button>
+        ))}
+      </div>
+
+      <LuxTable
+        data={data}
+        columns={columns}
+        columnVisibility={columnVisibility}
+        onColumnVisibilityChange={setColumnVisibility}
+      />
+    </div>
+  );
+}
+```
+
+---
+
+## Özellik Özeti
+
+| Özellik | Açıklama |
+|---------|----------|
+| **Sıralama** | Tabloyu o sütuna göre sıralamak için "Artan" veya "Azalan"a tıklayın |
+| **Gizleme** | Sütunu görünümden kaldırmak için "Gizle"ye tıklayın |
+| **Görsel Göstergeler** | Ok ikonları mevcut sıralama yönünü gösterir |

@@ -1,0 +1,117 @@
+---
+title: Column Actions
+description: Built-in dropdown menu for column actions
+---
+
+# Column Actions
+
+LuxTable provides a built-in dropdown menu in each column header for common actions like sorting and hiding columns.
+
+## How It Works
+
+When you use `createColumnHelper` and provide a string as the header, the column automatically gets a dropdown menu with:
+
+- **Sort Ascending** - Sort A→Z or 0→9
+- **Sort Descending** - Sort Z→A or 9→0
+- **Hide Column** - Remove the column from view
+
+```tsx
+import { createColumnHelper } from "luxtable";
+
+const columnHelper = createColumnHelper<User>();
+
+const columns = [
+  // ✅ This column will have the dropdown menu automatically
+  columnHelper.accessor("name", {
+    header: "Full Name",
+  }),
+  
+  // ✅ This also works (header derived from accessor name)
+  columnHelper.accessor("age"),
+];
+```
+
+---
+
+## Disabling the Dropdown
+
+To disable the dropdown menu, provide a function instead of a string for the header:
+
+```tsx
+// ❌ This column will NOT have the dropdown menu
+columnHelper.accessor("email", {
+  header: () => <div className="text-red-500">Custom Header</div>,
+});
+```
+
+---
+
+## Using LuxDataTableColumnHeader Manually
+
+If you want to customize the header but still use the dropdown functionality:
+
+```tsx
+import { LuxDataTableColumnHeader } from "luxtable";
+
+columnHelper.accessor("role", {
+  header: ({ column }) => (
+    <LuxDataTableColumnHeader column={column} title="User Role" />
+  ),
+});
+```
+
+---
+
+## Restoring Hidden Columns
+
+When a column is hidden, you'll need a way to show it again. You can do this with a custom UI component that shows/hides columns:
+
+```tsx
+import { useState } from "react";
+import { LuxTable, VisibilityState } from "luxtable";
+
+export default function App() {
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  const toggleColumn = (columnId: string) => {
+    setColumnVisibility((prev) => ({
+      ...prev,
+      [columnId]: !prev[columnId],
+    }));
+  };
+
+  return (
+    <div>
+      {/* Column visibility toggle buttons */}
+      <div className="mb-4 flex gap-2">
+        {["name", "email", "status"].map((col) => (
+          <button
+            key={col}
+            onClick={() => toggleColumn(col)}
+            className={columnVisibility[col] === false ? "opacity-50" : ""}
+          >
+            {col}
+          </button>
+        ))}
+      </div>
+
+      <LuxTable
+        data={data}
+        columns={columns}
+        columnVisibility={columnVisibility}
+        onColumnVisibilityChange={setColumnVisibility}
+      />
+    </div>
+  );
+}
+```
+
+---
+
+## Features Summary
+
+| Feature | Description |
+|---------|-------------|
+| **Sorting** | Click "Asc" or "Desc" to sort the table by that column |
+| **Hiding** | Click "Hide" to remove the column from view |
+| **Visual Indicators** | Arrow icons show current sort direction |

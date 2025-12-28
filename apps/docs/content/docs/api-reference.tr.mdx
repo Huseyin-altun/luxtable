@@ -1,0 +1,234 @@
+---
+title: API Referansı
+description: LuxTable için kapsamlı API dokümantasyonu
+---
+
+# API Referansı
+
+Tüm LuxTable bileşenleri, prop'ları ve yardımcı fonksiyonları için kapsamlı dokümantasyon.
+
+## LuxTable Bileşeni
+
+Ana tablo bileşeni.
+
+```tsx
+import { LuxTable } from "luxtable";
+
+<LuxTable
+  data={data}
+  columns={columns}
+  options={options}
+/>
+```
+
+### Prop'lar
+
+| Prop | Tip | Varsayılan | Açıklama |
+|------|-----|------------|----------|
+| `data` | `T[]` | Zorunlu | Görüntülenecek veri nesneleri dizisi |
+| `columns` | `ColumnDef<T>[]` | Zorunlu | Sütun tanımları |
+| `options` | `LuxTableOptions` | `{}` | Tablo seçenekleri (aşağıya bakın) |
+| `className` | `string` | - | Ek CSS sınıfları |
+
+### Seçenekler
+
+| Seçenek | Tip | Varsayılan | Açıklama |
+|---------|-----|------------|----------|
+| `pagination` | `boolean` | `false` | Sayfalamayı etkinleştir |
+| `pageSize` | `number` | `10` | Sayfa başına satır |
+| `sorting` | `boolean` | `false` | Sıralamayı etkinleştir |
+| `filtering` | `boolean` | `false` | Sütun filtrelemeyi etkinleştir |
+| `selection` | `'none' \| 'single' \| 'multiple'` | `'none'` | Satır seçim modu |
+| `showSelectionCheckbox` | `boolean` | `true` | Seçim checkbox'larını göster/gizle |
+
+### Kontrollü Durum Prop'ları
+
+| Prop | Tip | Açıklama |
+|------|-----|----------|
+| `sorting` | `SortingState` | Kontrollü sıralama durumu |
+| `onSortingChange` | `(state: SortingState) => void` | Sıralama değişiklik callback'i |
+| `rowSelection` | `RowSelectionState` | Kontrollü seçim durumu |
+| `onRowSelectionChange` | `(state: RowSelectionState) => void` | Seçim değişiklik callback'i |
+| `columnVisibility` | `VisibilityState` | Sütun görünürlük durumu |
+| `onColumnVisibilityChange` | `(state: VisibilityState) => void` | Görünürlük değişiklik callback'i |
+| `onSelectedRowsChange` | `(rows: T[]) => void` | Seçili satırlar veri callback'i |
+
+---
+
+## createColumnHelper
+
+Tip güvenli sütun tanımlama yardımcısı.
+
+```tsx
+import { createColumnHelper } from "luxtable";
+
+const columnHelper = createColumnHelper<VeriTipim>();
+```
+
+### Metodlar
+
+#### accessor()
+
+Belirli bir alandan veri erişen bir sütun oluşturur.
+
+```tsx
+columnHelper.accessor("alanAdi", {
+  header: "Başlık",
+  cell: (info) => info.getValue(),
+  enableSorting: true,
+  enableColumnFilter: true,
+  meta: { filterVariant: "text" | "select" },
+});
+```
+
+#### display()
+
+Sadece görüntüleme sütunu oluşturur (veri erişimcisi yok).
+
+```tsx
+columnHelper.display({
+  id: "ozel",
+  header: "Özel",
+  cell: ({ row }) => <OzelBilesen data={row.original} />,
+});
+```
+
+#### action()
+
+İşlemler sütunu oluşturur (önceden yapılandırılmış display sütunu).
+
+```tsx
+columnHelper.action({
+  cell: ({ row }) => <IslemlerMenusu data={row.original} />,
+});
+```
+
+---
+
+## createColumnsFromData
+
+Veri yapısından otomatik sütun üret.
+
+```tsx
+import { createColumnsFromData } from "luxtable";
+
+const columns = createColumnsFromData(data, {
+  headers: { alanAdi: "Başlık" },
+  cells: { alanAdi: (info) => <Ozel value={info.getValue()} /> },
+  exclude: ["gizliAlan"],
+});
+```
+
+### Seçenekler
+
+| Seçenek | Tip | Açıklama |
+|---------|-----|----------|
+| `headers` | `Record<string, string>` | Özel başlık metinleri |
+| `cells` | `Record<string, CellFn>` | Özel hücre render'ları |
+| `exclude` | `string[]` | Hariç tutulacak alanlar |
+
+---
+
+## Hücre Render'ları
+
+### StatusCell
+
+```tsx
+import { StatusCell } from "luxtable";
+
+<StatusCell 
+  value="Aktif" 
+  colors={{
+    Aktif: { bg: "bg-green-100", text: "text-green-800" },
+  }}
+/>
+```
+
+| Prop | Tip | Varsayılan | Açıklama |
+|------|-----|------------|----------|
+| `value` | `string` | Zorunlu | Durum değeri |
+| `colors` | `Record<string, {bg, text}>` | Varsayılan renkler | Özel renk eşlemesi |
+| `className` | `string` | - | Ek sınıflar |
+
+### ProgressCell
+
+```tsx
+import { ProgressCell } from "luxtable";
+
+<ProgressCell value={75} showLabel barColor="bg-blue-500" />
+```
+
+| Prop | Tip | Varsayılan | Açıklama |
+|------|-----|------------|----------|
+| `value` | `number` | Zorunlu | İlerleme değeri (0-100) |
+| `showLabel` | `boolean` | `false` | Yüzde etiketini göster |
+| `barColor` | `string` | `"bg-primary"` | Çubuk renk sınıfı |
+| `bgColor` | `string` | `"bg-secondary"` | Arkaplan renk sınıfı |
+
+### DateCell
+
+```tsx
+import { DateCell } from "luxtable";
+
+<DateCell value={new Date()} format="short" locale="tr-TR" />
+```
+
+| Prop | Tip | Varsayılan | Açıklama |
+|------|-----|------------|----------|
+| `value` | `Date \| string` | Zorunlu | Tarih değeri |
+| `format` | `'short' \| 'long' \| 'relative'` | `'short'` | Tarih formatı |
+| `locale` | `string` | `'en-US'` | Formatlama için yerel ayar |
+
+### CurrencyCell
+
+```tsx
+import { CurrencyCell } from "luxtable";
+
+<CurrencyCell value={1500} currency="TRY" locale="tr-TR" />
+```
+
+| Prop | Tip | Varsayılan | Açıklama |
+|------|-----|------------|----------|
+| `value` | `number` | Zorunlu | Sayısal değer |
+| `currency` | `string` | `'USD'` | Para birimi kodu |
+| `locale` | `string` | `'en-US'` | Formatlama için yerel ayar |
+
+### BooleanCell
+
+```tsx
+import { BooleanCell } from "luxtable";
+
+<BooleanCell value={true} trueLabel="Evet" falseLabel="Hayır" />
+```
+
+| Prop | Tip | Varsayılan | Açıklama |
+|------|-----|------------|----------|
+| `value` | `boolean` | Zorunlu | Boolean değer |
+| `trueLabel` | `string` | `'Yes'` | True için etiket |
+| `falseLabel` | `string` | `'No'` | False için etiket |
+
+### CopyableCell
+
+```tsx
+import { CopyableCell } from "luxtable";
+
+<CopyableCell value="kopyalanacak-metin" />
+```
+
+| Prop | Tip | Varsayılan | Açıklama |
+|------|-----|------------|----------|
+| `value` | `string` | Zorunlu | Görüntülenecek ve kopyalanacak değer |
+
+---
+
+## Tip Export'ları
+
+```tsx
+import type {
+  SortingState,
+  RowSelectionState,
+  VisibilityState,
+  PaginationState,
+  ColumnDef,
+} from "luxtable";
+```

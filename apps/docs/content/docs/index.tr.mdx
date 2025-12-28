@@ -1,0 +1,67 @@
+---
+title: LuxTable
+description: Güçlü, esnek ve kullanımı kolay React veri tablosu
+---
+
+import { LuxTableDemo, LuxTableCopyableDemo, LuxTableFilterDemo } from "../../components/lux-table-demo";
+
+# LuxTable
+
+**TanStack Table** üzerine kurulmuş güçlü bir React veri tablosu. Basit API, güzel varsayılanlar, tamamen özelleştirilebilir.
+
+## Özellikler
+
+- 🚀 **Sıfır Konfigürasyon** - Sadece veri ve sütunları ver, çalışır
+- 🎨 **Hazır Hücre Bileşenleri** - StatusCell, ProgressCell, DateCell, CopyableCell ve daha fazlası
+- 📦 **Otomatik Sütun Üretimi** - JSON verisinden otomatik sütun oluştur
+- 🔄 **Sayfalama & Sıralama** - Tek prop ile hazır
+- 📋 **Tıkla ve Kopyala** - Tek tıkla hücre değerini kopyala
+- 🔍 **Sütun Filtreleme** - Her sütun için ayrı filtre
+- ✅ **Satır Seçimi** - Tekli ve çoklu satır seçimi
+- 🎯 **TypeScript Öncelikli** - Tam tip güvenliği
+- 🌙 **Karanlık Mod Hazır** - Açık ve koyu temalarda güzel
+
+## Canlı Demo
+
+<LuxTableDemo />
+
+## Hızlı Kurulum
+
+```bash
+npm install luxtable
+```
+
+## Basit Örnek
+
+```tsx
+import { LuxTable, createColumnHelper, StatusCell } from "luxtable";
+
+const data = [
+  { name: "Ahmet", status: "Aktif" },
+  { name: "Ayşe", status: "Beklemede" },
+];
+
+const columnHelper = createColumnHelper();
+
+const columns = [
+  // Cell tanımına gerek yok - otomatik render!
+  columnHelper.accessor("name", { header: "İsim" }),
+  // Güzel rozetler için hazır StatusCell kullan
+  columnHelper.accessor("status", {
+    header: "Durum",
+    cell: (info) => <StatusCell value={info.getValue()} />,
+  }),
+];
+
+export default function App() {
+  return <LuxTable data={data} columns={columns} />;
+}
+```
+
+## Sırada Ne Var?
+
+<Cards>
+  <Card title="Hızlı Başlangıç" href="/tr/docs/quick-start" description="Dakikalar içinde çalışmaya başla" />
+  <Card title="Hücre Bileşenleri" href="/tr/docs/cell-renderers" description="Hazır hücre bileşenleri" />
+  <Card title="API Referansı" href="/tr/docs/api-reference" description="Tam API dokümantasyonu" />
+</Cards>

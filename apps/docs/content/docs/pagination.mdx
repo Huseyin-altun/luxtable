@@ -1,0 +1,96 @@
+---
+title: Pagination
+description: Add pagination to handle large datasets
+---
+
+# Pagination
+
+LuxTable includes built-in pagination to handle large datasets efficiently.
+
+## Basic Usage
+
+Enable pagination with a single prop:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ pagination: true }}
+/>
+```
+
+---
+
+## Default Page Size
+
+By default, pagination shows 10 rows per page. You can customize this:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ 
+    pagination: true,
+    pageSize: 25, // Show 25 rows per page
+  }}
+/>
+```
+
+---
+
+## Controlled Pagination
+
+For advanced use cases, you can control the pagination state externally:
+
+```tsx
+import { useState } from "react";
+import { LuxTable, PaginationState } from "luxtable";
+
+export default function App() {
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,  // Current page (0-indexed)
+    pageSize: 10,  // Rows per page
+  });
+
+  return (
+    <LuxTable 
+      data={data} 
+      columns={columns} 
+      pagination={pagination}
+      onPaginationChange={setPagination}
+      options={{ pagination: true }} 
+    />
+  );
+}
+```
+
+---
+
+## Pagination Controls
+
+The pagination component includes:
+
+- **Page navigation** - Previous/Next buttons
+- **Page indicator** - Current page / Total pages
+- **Page size selector** - Choose rows per page (10, 20, 30, 40, 50)
+- **Row count** - Total number of rows
+
+---
+
+## Combining with Other Features
+
+Pagination works seamlessly with sorting and filtering:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ 
+    pagination: true,
+    sorting: true,
+    filtering: true,
+  }}
+/>
+```
+
+When filtering is applied, pagination automatically adjusts to show only the filtered results.

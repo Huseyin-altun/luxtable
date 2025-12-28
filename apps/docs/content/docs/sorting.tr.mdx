@@ -1,0 +1,126 @@
+---
+title: Sıralama
+description: Sütun başlıklarına tıklayarak tablo verilerinizi sıralayın
+---
+
+import { LuxTableSortingDemo } from "../../components/lux-table-demo";
+
+# Sıralama
+
+LuxTable yerleşik sıralama işlevselliği sağlar. Verileri sıralamak için sütun başlıklarına tıklamanız yeterli.
+
+## Canlı Demo
+
+<LuxTableSortingDemo />
+
+## Temel Kullanım
+
+Tek bir prop ile sıralamayı etkinleştirin:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ sorting: true }}
+/>
+```
+
+Sıralama etkinleştirildiğinde tüm sütunlar varsayılan olarak sıralanabilir.
+
+---
+
+## Belirli Sütunlarda Sıralamayı Devre Dışı Bırakma
+
+Belirli sütunlarda sıralamayı devre dışı bırakabilirsiniz:
+
+```tsx
+const columns = [
+  columnHelper.accessor("isim", { 
+    header: "İsim",
+    enableSorting: true,  // Varsayılan: true
+  }),
+  
+  columnHelper.accessor("islemler", {
+    header: "İşlemler",
+    enableSorting: false, // 👈 Bu sütun için sıralama yok
+  }),
+];
+```
+
+---
+
+## Kontrollü Sıralama
+
+İleri düzey kullanım durumları için sıralama durumunu dışarıdan kontrol edebilirsiniz:
+
+```tsx
+import { useState } from "react";
+import { LuxTable, SortingState } from "luxtable";
+
+export default function App() {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  return (
+    <LuxTable 
+      data={data} 
+      columns={columns} 
+      sorting={sorting}
+      onSortingChange={setSorting}
+      options={{ sorting: true }} 
+    />
+  );
+}
+```
+
+### SortingState Formatı
+
+Sıralama durumu, sıralama nesnelerinden oluşan bir dizidir:
+
+```tsx
+// Tek sütun sıralaması
+const sorting = [{ id: "isim", desc: false }]; // İsme göre artan
+
+// Çoklu sütun sıralaması (etkinleştirilmişse)
+const sorting = [
+  { id: "departman", desc: false },
+  { id: "isim", desc: true },
+];
+```
+
+---
+
+## Varsayılan Sıralama
+
+Varsayılan bir sıralama durumu sağlayarak başlangıç sıralaması ayarlayabilirsiniz:
+
+```tsx
+import { useState } from "react";
+import { LuxTable, SortingState } from "luxtable";
+
+export default function App() {
+  // İsim sütunu artan sıralı başla
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "isim", desc: false }
+  ]);
+
+  return (
+    <LuxTable 
+      data={data} 
+      columns={columns} 
+      sorting={sorting}
+      onSortingChange={setSorting}
+      options={{ sorting: true }} 
+    />
+  );
+}
+```
+
+---
+
+## Sıralama Göstergeleri
+
+Bir sütun sıralandığında, sütun başlığında görsel göstergeler (oklar) görünür:
+- **↑** - Artan (A→Z, 0→9)
+- **↓** - Azalan (Z→A, 9→0)
+
+Sütun başlığına tıklayarak döngü yapın: Sıralama Yok → Artan → Azalan → Sıralama Yok

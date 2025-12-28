@@ -1,0 +1,154 @@
+---
+title: Satır İşlemleri
+description: Tablo satırlarınıza etkileşimli işlemler ekleyin
+---
+
+import { LuxTableActionsDemo } from "../../components/lux-table-demo";
+
+# Satır İşlemleri
+
+`columnHelper.action()` kullanarak tablo satırlarınıza dropdown menüler, butonlar veya herhangi bir etkileşimli element ekleyin.
+
+## Canlı Demo
+
+<LuxTableActionsDemo />
+
+## Temel Kullanım
+
+İşlemler sütunu oluşturmak için columnHelper'dan `action()` metodunu kullanın:
+
+```tsx
+import { LuxTable, createColumnHelper } from "luxtable";
+import { MoreHorizontal, Edit, Trash } from "lucide-react";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger,
+  Button 
+} from "luxtable";
+
+const columnHelper = createColumnHelper<Calisan>();
+
+const columns = [
+  columnHelper.accessor("isim", { header: "İsim" }),
+  columnHelper.accessor("email", { header: "E-posta" }),
+  
+  // İşlemler Sütunu
+  columnHelper.action({
+    cell: ({ row }) => {
+      const calisan = row.original;
+      
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+              <span className="sr-only">Menüyü aç</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => handleEdit(calisan)}>
+              <Edit className="mr-2 h-4 w-4" />
+              Düzenle
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => handleDelete(calisan)}
+              className="text-red-600"
+            >
+              <Trash className="mr-2 h-4 w-4" />
+              Sil
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  }),
+];
+```
+
+---
+
+## action() Ne Yapar
+
+`action()` metodu şunları yapan bir kolaylık sarmalayıcısıdır:
+
+1. Accessor olmadan bir sütun oluşturur (sadece görüntüleme)
+2. Sütun için sıralamayı devre dışı bırakır
+3. Sütun için filtrelemeyi devre dışı bırakır
+4. Varsayılan başlık olarak boş string ayarlar
+
+Şuna eşdeğerdir:
+
+```tsx
+columnHelper.display({
+  id: "actions",
+  header: "",
+  enableSorting: false,
+  enableColumnFilter: false,
+  cell: ({ row }) => { /* işlemleriniz */ },
+});
+```
+
+---
+
+## Satır Verisine Erişim
+
+Tam veri nesnesine erişmek için cell fonksiyonu içinde `row.original` kullanın:
+
+```tsx
+columnHelper.action({
+  cell: ({ row }) => {
+    const data = row.original; // Tam satır veri nesnesi
+    
+    return (
+      <div>
+        <button onClick={() => handleView(data.id)}>Görüntüle</button>
+        <button onClick={() => handleEdit(data)}>Düzenle</button>
+      </div>
+    );
+  },
+});
+```
+
+---
+
+## Basit Buton İşlemleri
+
+Dropdown kullanmak zorunda değilsiniz. Basit butonlar da çalışır:
+
+```tsx
+columnHelper.action({
+  cell: ({ row }) => (
+    <div className="flex gap-2">
+      <button 
+        onClick={() => handleView(row.original)}
+        className="text-blue-600 hover:underline"
+      >
+        Görüntüle
+      </button>
+      <button 
+        onClick={() => handleEdit(row.original)}
+        className="text-green-600 hover:underline"
+      >
+        Düzenle
+      </button>
+      <button 
+        onClick={() => handleDelete(row.original)}
+        className="text-red-600 hover:underline"
+      >
+        Sil
+      </button>
+    </div>
+  ),
+});
+```
+
+---
+
+## İpuçları
+
+- **Satır Verisine Erişim**: O satır için tam veri nesnesini almak için `row.original` kullanın
+- **Konumlandırma**: Sağ tarafta taşmayı önlemek için `DropdownMenuContent` üzerinde `align="end"` kullanın
+- **Erişilebilirlik**: Sadece ikon butonlar için ekran okuyucu metni ekleyin
+- **Stil**: Yıkıcı işlemleri (silme gibi) netlik için kırmızı renk ile stilize edin

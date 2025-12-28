@@ -1,5 +1,14 @@
 import { createColumnHelper as tanstackCreateColumnHelper, ColumnDef, CellContext, HeaderContext } from "@tanstack/react-table";
 import * as React from "react";
+import { LuxDataTableColumnHeader } from "../components/lux-table/column-header";
+
+// camelCase -> Title Case conversion
+const toTitleCase = (str: string) => {
+  return str
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (s) => s.toUpperCase())
+    .trim();
+};
 
 export type { ColumnDef };
 
@@ -7,41 +16,41 @@ export interface ColumnOptions<TData, TValue> {
   id?: string;
   header?: string | ((context: HeaderContext<TData, TValue>) => React.ReactNode);
   cell?: (info: CellContext<TData, TValue>) => React.ReactNode;
-  /** Sıralamayı aktif/pasif yap (varsayılan: true) */
+
   enableSorting?: boolean;
-  /** Kolon meta bilgileri (ör: filterVariant) */
+  /** Column meta information (e.g. filterVariant) */
   meta?: {
-    /** Filtre tipi: "text" (varsayılan) veya "select" (dropdown) */
+    /** Filter type: "text" (default) or "select" (dropdown) */
     filterVariant?: "text" | "select";
   };
 }
 
-// Özel kolon tipleri için interface
+// Interface for special column types
 export type ColumnType = "text" | "status" | "progress" | "boolean" | "date" | "currency" | "custom";
 
 export interface SmartColumnOptions<TData, TValue> extends ColumnOptions<TData, TValue> {
   /** 
-   * Kolon tipi - otomatik render için kullanılır
-   * - text: Değeri düz metin olarak gösterir (varsayılan)
-   * - status: StatusCell bileşeni ile gösterir
-   * - progress: ProgressCell bileşeni ile gösterir
-   * - boolean: BooleanCell bileşeni ile gösterir
-   * - date: DateCell bileşeni ile gösterir
-   * - currency: CurrencyCell bileşeni ile gösterir
-   * - custom: Sizin verdiğiniz cell fonksiyonunu kullanır
+   * Column type - used for automatic rendering
+   * - text: Displays value as plain text (default)
+   * - status: Displays with StatusCell component
+   * - progress: Displays with ProgressCell component
+   * - boolean: Displays with BooleanCell component
+   * - date: Displays with DateCell component
+   * - currency: Displays with CurrencyCell component
+   * - custom: Uses your provided cell function
    */
   type?: ColumnType;
-  /** Status tipi için özel renkler */
+  /** Custom colors for Status type */
   statusColors?: Record<string, { bg: string; text: string; darkBg?: string; darkText?: string }>;
-  /** Progress tipi için bar rengi */
+  /** Bar color for Progress type */
   progressBarColor?: string;
-  /** Progress tipi için label gösterilsin mi */
+  /** Whether to show label for Progress type */
   showProgressLabel?: boolean;
-  /** Boolean tipi için etiketler */
+  /** Labels for Boolean type */
   booleanLabels?: { true: string; false: string };
-  /** Date tipi için format */
+  /** Format for Date type */
   dateFormat?: "short" | "long" | "relative";
-  /** Currency tipi için para birimi */
+  /** Currency code for Currency type */
   currency?: string;
   /** Locale */
   locale?: string;
@@ -49,29 +58,40 @@ export interface SmartColumnOptions<TData, TValue> extends ColumnOptions<TData, 
 
 export function createColumnHelper<TData>() {
   const helper = tanstackCreateColumnHelper<TData>();
-  
+
   return {
     /**
-     * Basit accessor - cell verilmezse değer otomatik render edilir
+     * Simple accessor - if cell is not provided, value is rendered automatically
      */
     accessor: <TValue,>(
       accessor: keyof TData & string,
       column?: ColumnOptions<TData, TValue>
     ): ColumnDef<TData, TValue> => {
+      const headerContent = column?.header;
+
       const finalColumn = {
         ...column,
-        // enableSorting varsayılan olarak true
+        // enableSorting is true by default
         enableSorting: column?.enableSorting !== false,
-        // Meta bilgilerini aktar (filterVariant vb.)
+        // Pass meta information (filterVariant etc.)
         meta: column?.meta,
-        // Eğer cell tanımlanmamışsa, değeri direkt göster
+        // Use LuxDataTableColumnHeader if header is string or undefined
+        header: typeof headerContent === 'function'
+          ? headerContent
+          : ({ column: colParam }: HeaderContext<TData, TValue>) => (
+            <LuxDataTableColumnHeader
+              column={colParam}
+              title={typeof headerContent === 'string' ? headerContent : toTitleCase(accessor)}
+            />
+          ),
+        // If cell is not defined, show value directly
         cell: column?.cell || ((info: CellContext<TData, TValue>) => {
           const value = info.getValue();
-          // null veya undefined ise - göster
+          // if null or undefined, show -
           if (value === null || value === undefined) {
             return "-";
           }
-          // String veya number ise direkt göster
+          // If string or number, show directly
           return String(value);
         }),
       };
@@ -79,19 +99,39 @@ export function createColumnHelper<TData>() {
     },
 
     /**
-     * Display kolon (actions vs için)
+     * Display column (for actions etc.)
      */
     display: (column: {
       id: string;
       header?: string | (() => React.ReactNode);
-      cell?: (info: { row: { original: TData } }) => React.ReactNode;
+      cell?: (info: CellContext<TData, unknown>) => React.ReactNode;
+      enableSorting?: boolean;
+      enableHiding?: boolean;
     }): ColumnDef<TData, unknown> => {
       return helper.display(column as any);
     },
 
     /**
-     * Tüm kolonları otomatik oluştur - JSON'dan direkt tablo
-     * Sadece header'ları belirtmeniz yeterli, cell otomatik render edilir
+     * Action column - specialized display column for row actions
+     * Disables sorting by default
+     */
+    action: (column: {
+      cell: (info: CellContext<TData, unknown>) => React.ReactNode;
+      id?: string;
+      header?: string | (() => React.ReactNode);
+    }): ColumnDef<TData, unknown> => {
+      return helper.display({
+        id: "actions",
+        header: "",
+        enableSorting: false,
+        enableHiding: false,
+        ...column,
+      } as any);
+    },
+
+    /**
+     * Create all columns automatically - Table directly from JSON
+     * Just specifying headers is enough, cell is rendered automatically
      */
     auto: (
       columns: Array<{
@@ -102,7 +142,9 @@ export function createColumnHelper<TData>() {
     ): ColumnDef<TData, unknown>[] => {
       return columns.map((col) => {
         return helper.accessor(col.accessor as any, {
-          header: col.header,
+          header: ({ column }: HeaderContext<TData, unknown>) => (
+            <LuxDataTableColumnHeader column={column} title={col.header} />
+          ),
           cell: col.cell || ((info: CellContext<TData, unknown>) => {
             const value = info.getValue();
             if (value === null || value === undefined) return "-";
@@ -115,8 +157,8 @@ export function createColumnHelper<TData>() {
 }
 
 /**
- * JSON datasından otomatik kolonlar oluşturur
- * Kolon isimlerini header olarak kullanır (camelCase -> Title Case)
+ * Creates automatic columns from JSON data
+ * Uses column names as header (camelCase -> Title Case)
  */
 export function createColumnsFromData<TData extends Record<string, unknown>>(
   data: TData[],
@@ -133,7 +175,7 @@ export function createColumnsFromData<TData extends Record<string, unknown>>(
   const firstRow = data[0];
   let keys = Object.keys(firstRow) as (keyof TData & string)[];
 
-  // Include/exclude filtrele
+  // Filter include/exclude
   if (options?.include) {
     keys = keys.filter((k) => options.include?.includes(k));
   }
@@ -141,20 +183,14 @@ export function createColumnsFromData<TData extends Record<string, unknown>>(
     keys = keys.filter((k) => !options.exclude?.includes(k));
   }
 
-  // camelCase -> Title Case dönüşümü
-  const toTitleCase = (str: string) => {
-    return str
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (s) => s.toUpperCase())
-      .trim();
-  };
+
 
   return keys.map((key) => {
     const headerText = options?.headers?.[key] || toTitleCase(key as string);
     const cellRenderer = options?.cells?.[key];
 
     return helper.accessor(key as any, {
-      header: headerText,
+      header: ({ column }: HeaderContext<TData, unknown>) => <LuxDataTableColumnHeader column={column} title={headerText} />,
       cell: cellRenderer || ((info) => {
         const value = info.getValue();
         if (value === null || value === undefined) return "-";

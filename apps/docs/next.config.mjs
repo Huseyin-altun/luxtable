@@ -14,6 +14,25 @@ const config = {
   turbopack: {
     root: path.join(__dirname, '../../'),
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/en',
+        permanent: false,
+      },
+      {
+        source: '/docs',
+        destination: '/en/docs',
+        permanent: false,
+      },
+      {
+        source: '/docs/:path*',
+        destination: '/en/docs/:path*',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default withMDX(config);

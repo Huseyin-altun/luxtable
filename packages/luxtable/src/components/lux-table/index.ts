@@ -6,3 +6,4 @@ export { LuxTable } from "./lux-table";
 export type { LuxTableProps, LuxTableOptions, ColumnMeta, PaginationInfo } from "./types";
 export { ColumnFilter } from "./column-filter";
 export { TablePagination } from "./pagination";
+export { LuxDataTableColumnHeader } from "./column-header";

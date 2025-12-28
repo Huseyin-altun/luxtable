@@ -1,7 +1,22 @@
 "use client";
 
 import * as React from "react";
-import { LuxTable, createColumnHelper, StatusCell, ProgressCell, createColumnsFromData, CopyableCell } from "luxtable";
+import {
+    LuxTable,
+    createColumnHelper,
+    StatusCell,
+    ProgressCell,
+    createColumnsFromData,
+    CopyableCell,
+    Button,
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator
+} from "luxtable";
+import { MoreHorizontal, Edit, Trash, Copy, User } from "lucide-react";
 
 // =====================================================
 // SHARED DATA
@@ -285,6 +300,72 @@ export function LuxTableSelectionDemo() {
                     </ul>
                 </div>
             )}
+        </div>
+    );
+}
+
+// =====================================================
+// METHOD 7: Actions Demo - Column Actions (Dropdown)
+// =====================================================
+export function LuxTableActionsDemo() {
+    const actionColumns = [
+        filterColumnHelper.accessor("name", { header: "Name" }),
+        filterColumnHelper.accessor("role", { header: "Role" }),
+        filterColumnHelper.accessor("status", {
+            header: "Status",
+            cell: (info) => <StatusCell value={info.getValue() as string} />,
+        }),
+        // Actions Column utilizing the new .action() helper
+        filterColumnHelper.action({
+            header: "Actions", // Optional: Override default empty header
+            cell: ({ row }) => {
+                const employee = row.original;
+                return (
+                    <div className="flex justify-end pr-4">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                                    <span className="sr-only">Open menu</span>
+                                    <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(employee.name)}>
+                                    <Copy className="mr-2 h-4 w-4" />
+                                    Copy Name
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+                                    <User className="mr-2 h-4 w-4" />
+                                    View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Edit Employee
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/20">
+                                    <Trash className="mr-2 h-4 w-4" />
+                                    Delete Employee
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                )
+            }
+        })
+    ];
+
+    return (
+        <div className="my-6 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
+            <p className="text-sm text-gray-500 dark:text-gray-400 px-4 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                ⚡️ Click the three dots on the right to see row actions!
+            </p>
+            <LuxTable
+                data={employeeData.slice(0, 5)}
+                columns={actionColumns}
+                options={{ pagination: false }}
+            />
         </div>
     );
 }

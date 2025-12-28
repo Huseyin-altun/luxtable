@@ -3,7 +3,7 @@ title: Quick Start
 description: Get started with LuxTable in minutes
 ---
 
-import { LuxTableDemo, LuxTableAutoDemo, LuxTableCustomDemo } from "../../components/lux-table-demo";
+import { LuxTableDemo, LuxTableAutoDemo } from "../../components/lux-table-demo";
 
 # Quick Start
 
@@ -13,13 +13,17 @@ Get up and running with LuxTable in just a few minutes.
 
 ```bash
 npm install luxtable
+# or
+yarn add luxtable
+# or
+pnpm add luxtable
 ```
 
 ---
 
-## Yöntem 1: createColumnHelper ile (Önerilen)
+## Method 1: createColumnHelper (Recommended)
 
-En esnek yöntem. Kolonları tek tek tanımlarsın, **cell belirtmezsen değer otomatik gösterilir**:
+The most flexible method. Define columns one by one. **If you don't specify a cell, the value is automatically rendered**:
 
 <LuxTableDemo />
 
@@ -44,7 +48,7 @@ const data: Person[] = [
 const columnHelper = createColumnHelper<Person>();
 
 const columns = [
-  // 🎉 no cell definition needed - auto render!
+  // 🎉 No cell definition needed - auto render!
   columnHelper.accessor("firstName", { header: "First Name" }),
   columnHelper.accessor("lastName", { header: "Last Name" }),
   columnHelper.accessor("age", { header: "Age" }),
@@ -84,13 +88,10 @@ const data = [
 
 // 🚀 Columns ready in one line!
 const columns = createColumnsFromData(data, {
-  // English headers (optional - camelCase is automatically converted to Title Case)
+  // Custom headers (optional - camelCase is automatically converted to Title Case)
   headers: {
     firstName: "First Name",
     lastName: "Last Name",
-    age: "Age",
-    status: "Status",
-    progress: "Progress",
   },
   // Only specify columns requiring custom appearance
   cells: {
@@ -108,94 +109,10 @@ export function MyTable() {
 
 ---
 
-  ## Built-in Cell Components
-
-LuxTable comes with ready-made components:
-
-| Component | Description | Props |
-|---|---|---|
-| `StatusCell` | Colored badge | `value`, `colors?`, `className?` |
-| `ProgressCell` | Progress bar | `value`, `barColor?`, `bgColor?`, `showLabel?` |
-| `BooleanCell` | Yes/No display | `value`, `trueLabel?`, `falseLabel?` |
-| `DateCell` | Date formatting | `value`, `format?` (`short`/`long`/`relative`) |
-| `CurrencyCell` | Currency | `value`, `currency?`, `locale?` |
-
-### Examples
-
-```tsx
-// StatusCell - Default colors: Active, Inactive, Pending, Completed, Cancelled
-<StatusCell value="Active" />
-
-// ProgressCell - Progress bar with label
-<ProgressCell value={75} showLabel />
-
-// BooleanCell - Custom labels
-<BooleanCell value={true} trueLabel="Yes" falseLabel="No" />
-
-// DateCell - Relative date
-<DateCell value={new Date()} format="relative" />
-
-// CurrencyCell - Turkish Lira
-<CurrencyCell value={1500} currency="TRY" locale="tr-TR" />
-```
-
----
-
-## With Pagination
-
-```tsx
-<LuxTable 
-  data={data} 
-  columns={columns} 
-  options={{ pagination: true }} 
-/>
-```
-
----
-
-## Sorting
-
-import { LuxTableSortingDemo } from "../../components/lux-table-demo";
-
-You can sort by clicking on columns. All columns are sortable by default.
-
-<LuxTableSortingDemo />
-
-```tsx
-// Sıralamayı aktif et
-<LuxTable 
-  data={data} 
-  columns={columns} 
-  options={{ sorting: true }} 
-/>
-
-// Belirli kolonlarda sıralamayı kapat
-const columns = [
-  columnHelper.accessor("name", { 
-    header: "Name",
-    enableSorting: true,  // Varsayılan true
-  }),
-  columnHelper.accessor("status", {
-    header: "Status",
-    enableSorting: false, // Bu kolonda sıralama yok
-  }),
-];
-
-// Controlled sorting (state management)
-const [sorting, setSorting] = useState<SortingState>([]);
-
-<LuxTable 
-  data={data} 
-  columns={columns} 
-  sorting={sorting}
-  onSortingChange={setSorting}
-  options={{ sorting: true }} 
-/>
-```
-
 ## Next Steps
 
-- Learn about [filtering](/docs/features)
-- Explore [custom styling](/docs/styling)
-- Check out [advanced examples](/docs/examples)
-
+<Cards>
+  <Card title="Cell Renderers" href="/docs/cell-renderers" description="Built-in cell components" />
+  <Card title="Column Filtering" href="/docs/column-filtering" description="Add filters to columns" />
+  <Card title="Row Selection" href="/docs/row-selection" description="Select rows with checkboxes" />
+</Cards>

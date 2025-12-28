@@ -1,0 +1,211 @@
+---
+title: Cell Renderers
+description: Built-in cell components for common data types
+---
+
+# Cell Renderers
+
+LuxTable comes with ready-made cell components for common use cases. These components provide beautiful, consistent styling out of the box.
+
+## Available Components
+
+| Component | Description | Key Props |
+|-----------|-------------|-----------|
+| `StatusCell` | Colored status badges | `value`, `colors?` |
+| `ProgressCell` | Progress bar | `value`, `barColor?`, `showLabel?` |
+| `BooleanCell` | Yes/No display | `value`, `trueLabel?`, `falseLabel?` |
+| `DateCell` | Date formatting | `value`, `format?` |
+| `CurrencyCell` | Currency formatting | `value`, `currency?`, `locale?` |
+| `CopyableCell` | Click to copy | `value` |
+
+---
+
+## StatusCell
+
+Display status values with colored badges. Comes with default colors for common statuses.
+
+```tsx
+import { StatusCell } from "luxtable";
+
+// Default colors for: Active, Inactive, Pending, Completed, Cancelled
+<StatusCell value="Active" />
+<StatusCell value="Pending" />
+<StatusCell value="Cancelled" />
+
+// Custom colors
+<StatusCell 
+  value="Custom" 
+  colors={{
+    Custom: { bg: "bg-purple-100", text: "text-purple-800" },
+  }}
+/>
+```
+
+### Default Color Mapping
+
+| Status | Background | Text |
+|--------|------------|------|
+| Active | Green | Green |
+| Inactive | Gray | Gray |
+| Pending | Yellow | Yellow |
+| Completed | Blue | Blue |
+| Cancelled | Red | Red |
+
+---
+
+## ProgressCell
+
+Display numeric values as a progress bar.
+
+```tsx
+import { ProgressCell } from "luxtable";
+
+// Basic usage
+<ProgressCell value={75} />
+
+// With percentage label
+<ProgressCell value={75} showLabel />
+
+// Custom colors
+<ProgressCell 
+  value={50} 
+  barColor="bg-purple-500" 
+  bgColor="bg-purple-100" 
+  showLabel 
+/>
+```
+
+---
+
+## BooleanCell
+
+Display boolean values with customizable labels.
+
+```tsx
+import { BooleanCell } from "luxtable";
+
+// Default: "Yes" / "No"
+<BooleanCell value={true} />
+<BooleanCell value={false} />
+
+// Custom labels
+<BooleanCell value={true} trueLabel="Enabled" falseLabel="Disabled" />
+<BooleanCell value={true} trueLabel="✓" falseLabel="✗" />
+```
+
+---
+
+## DateCell
+
+Format dates in various styles.
+
+```tsx
+import { DateCell } from "luxtable";
+
+// Short format: "Dec 28, 2024"
+<DateCell value={new Date()} format="short" />
+
+// Long format: "December 28, 2024"
+<DateCell value={new Date()} format="long" />
+
+// Relative format: "2 hours ago"
+<DateCell value={new Date()} format="relative" />
+
+// With custom locale
+<DateCell value={new Date()} format="short" locale="de-DE" />
+```
+
+---
+
+## CurrencyCell
+
+Format numbers as currency.
+
+```tsx
+import { CurrencyCell } from "luxtable";
+
+// Default: USD
+<CurrencyCell value={1500} />
+// Output: $1,500.00
+
+// Euro
+<CurrencyCell value={1500} currency="EUR" locale="de-DE" />
+// Output: 1.500,00 €
+
+// Turkish Lira
+<CurrencyCell value={1500} currency="TRY" locale="tr-TR" />
+// Output: ₺1.500,00
+```
+
+---
+
+## CopyableCell
+
+Display a value that can be copied to clipboard with a single click.
+
+```tsx
+import { CopyableCell } from "luxtable";
+
+// Email that can be copied
+<CopyableCell value="user@example.com" />
+
+// Any text
+<CopyableCell value="ABC-123-XYZ" />
+```
+
+---
+
+## Using in Columns
+
+Here's how to use cell renderers in your column definitions:
+
+```tsx
+import { 
+  createColumnHelper, 
+  StatusCell, 
+  ProgressCell, 
+  DateCell,
+  CurrencyCell,
+  CopyableCell 
+} from "luxtable";
+
+type Employee = {
+  name: string;
+  email: string;
+  status: string;
+  progress: number;
+  salary: number;
+  hireDate: Date;
+};
+
+const columnHelper = createColumnHelper<Employee>();
+
+const columns = [
+  columnHelper.accessor("name", { header: "Name" }),
+  
+  columnHelper.accessor("email", {
+    header: "Email",
+    cell: (info) => <CopyableCell value={info.getValue()} />,
+  }),
+  
+  columnHelper.accessor("status", {
+    header: "Status",
+    cell: (info) => <StatusCell value={info.getValue()} />,
+  }),
+  
+  columnHelper.accessor("progress", {
+    header: "Progress",
+    cell: (info) => <ProgressCell value={info.getValue()} showLabel />,
+  }),
+  
+  columnHelper.accessor("salary", {
+    header: "Salary",
+    cell: (info) => <CurrencyCell value={info.getValue()} />,
+  }),
+  
+  columnHelper.accessor("hireDate", {
+    header: "Hire Date",
+    cell: (info) => <DateCell value={info.getValue()} format="short" />,
+  }),
+];
+```

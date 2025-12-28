@@ -17,69 +17,13 @@ A powerful React data grid built on top of **TanStack Table**. Simple API, beaut
 - 🔄 **Pagination & Sorting** - Built-in with single prop
 - 📋 **Click to Copy** - One-click cell value copying
 - 🔍 **Column Filtering** - Filter data per column
+- ✅ **Row Selection** - Single and multiple row selection
 - 🎯 **TypeScript First** - Full type safety
 - 🌙 **Dark Mode Ready** - Beautiful in light and dark themes
 
 ## Live Demo
 
 <LuxTableDemo />
-
-## Column Filtering
-
-Enable column-level filtering with `options.filtering`. Use dropdown filters for columns with limited values!
-
-<LuxTableFilterDemo />
-
-```tsx
-import { LuxTable, createColumnHelper } from "luxtable";
-
-const columnHelper = createColumnHelper<Employee>();
-
-const columns = [
-  // Text filter (default)
-  columnHelper.accessor("name", { header: "Name" }),
-  
-  // Dropdown filter for limited value columns
-  columnHelper.accessor("department", { 
-    header: "Department",
-    meta: { filterVariant: "select" }, // Dropdown filter!
-  }),
-  
-  columnHelper.accessor("status", { 
-    header: "Status",
-    meta: { filterVariant: "select" }, // Dropdown filter!
-  }),
-];
-
-export default function App() {
-  return (
-    <LuxTable 
-      data={data} 
-      columns={columns} 
-      options={{ filtering: true }}
-    />
-  );
-}
-```
-
-## Click to Copy Feature
-
-Use `CopyableCell` to make any cell value copyable with a single click!
-
-<LuxTableCopyableDemo />
-
-```tsx
-import { LuxTable, createColumnHelper, CopyableCell } from "luxtable";
-
-const columnHelper = createColumnHelper<User>();
-
-const columns = [
-  columnHelper.accessor("email", {
-    header: "Email",
-    cell: (info) => <CopyableCell value={info.getValue()} />,
-  }),
-];
-```
 
 ## Quick Install
 
@@ -117,6 +61,7 @@ export default function App() {
 ## What's Next?
 
 <Cards>
-  <Card title="Quick Start" href="/docs/quick-start" />
-  <Card title="API Reference" href="/docs/api" />
+  <Card title="Quick Start" href="/docs/quick-start" description="Get up and running in minutes" />
+  <Card title="Cell Renderers" href="/docs/cell-renderers" description="Built-in cell components" />
+  <Card title="API Reference" href="/docs/api-reference" description="Complete API documentation" />
 </Cards>

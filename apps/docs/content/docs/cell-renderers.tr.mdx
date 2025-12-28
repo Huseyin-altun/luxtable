@@ -1,0 +1,208 @@
+---
+title: Hücre Bileşenleri
+description: Yaygın veri tipleri için hazır hücre bileşenleri
+---
+
+# Hücre Bileşenleri
+
+LuxTable, yaygın kullanım senaryoları için hazır hücre bileşenleri ile gelir. Bu bileşenler kutudan çıktığı gibi güzel ve tutarlı stil sağlar.
+
+## Mevcut Bileşenler
+
+| Bileşen | Açıklama | Ana Prop'lar |
+|---------|----------|--------------|
+| `StatusCell` | Renkli durum rozetleri | `value`, `colors?` |
+| `ProgressCell` | İlerleme çubuğu | `value`, `barColor?`, `showLabel?` |
+| `BooleanCell` | Evet/Hayır gösterimi | `value`, `trueLabel?`, `falseLabel?` |
+| `DateCell` | Tarih formatlama | `value`, `format?` |
+| `CurrencyCell` | Para birimi formatlama | `value`, `currency?`, `locale?` |
+| `CopyableCell` | Tıkla kopyala | `value` |
+
+---
+
+## StatusCell
+
+Durum değerlerini renkli rozetlerle gösterir. Yaygın durumlar için varsayılan renklerle gelir.
+
+```tsx
+import { StatusCell } from "luxtable";
+
+// Varsayılan renkler: Active, Inactive, Pending, Completed, Cancelled
+<StatusCell value="Active" />
+<StatusCell value="Pending" />
+<StatusCell value="Cancelled" />
+
+// Özel renkler
+<StatusCell 
+  value="Özel" 
+  colors={{
+    Özel: { bg: "bg-purple-100", text: "text-purple-800" },
+  }}
+/>
+```
+
+### Varsayılan Renk Eşlemesi
+
+| Durum | Arkaplan | Metin |
+|-------|----------|-------|
+| Active | Yeşil | Yeşil |
+| Inactive | Gri | Gri |
+| Pending | Sarı | Sarı |
+| Completed | Mavi | Mavi |
+| Cancelled | Kırmızı | Kırmızı |
+
+---
+
+## ProgressCell
+
+Sayısal değerleri ilerleme çubuğu olarak gösterir.
+
+```tsx
+import { ProgressCell } from "luxtable";
+
+// Temel kullanım
+<ProgressCell value={75} />
+
+// Yüzde etiketi ile
+<ProgressCell value={75} showLabel />
+
+// Özel renkler
+<ProgressCell 
+  value={50} 
+  barColor="bg-purple-500" 
+  bgColor="bg-purple-100" 
+  showLabel 
+/>
+```
+
+---
+
+## BooleanCell
+
+Boolean değerleri özelleştirilebilir etiketlerle gösterir.
+
+```tsx
+import { BooleanCell } from "luxtable";
+
+// Varsayılan: "Evet" / "Hayır"
+<BooleanCell value={true} />
+<BooleanCell value={false} />
+
+// Özel etiketler
+<BooleanCell value={true} trueLabel="Etkin" falseLabel="Devre Dışı" />
+<BooleanCell value={true} trueLabel="✓" falseLabel="✗" />
+```
+
+---
+
+## DateCell
+
+Tarihleri çeşitli stillerde formatlar.
+
+```tsx
+import { DateCell } from "luxtable";
+
+// Kısa format: "28 Ara 2024"
+<DateCell value={new Date()} format="short" locale="tr-TR" />
+
+// Uzun format: "28 Aralık 2024"
+<DateCell value={new Date()} format="long" locale="tr-TR" />
+
+// Göreli format: "2 saat önce"
+<DateCell value={new Date()} format="relative" locale="tr-TR" />
+```
+
+---
+
+## CurrencyCell
+
+Sayıları para birimi olarak formatlar.
+
+```tsx
+import { CurrencyCell } from "luxtable";
+
+// Türk Lirası
+<CurrencyCell value={1500} currency="TRY" locale="tr-TR" />
+// Çıktı: ₺1.500,00
+
+// Dolar
+<CurrencyCell value={1500} currency="USD" locale="en-US" />
+// Çıktı: $1,500.00
+
+// Euro
+<CurrencyCell value={1500} currency="EUR" locale="de-DE" />
+// Çıktı: 1.500,00 €
+```
+
+---
+
+## CopyableCell
+
+Tek tıkla panoya kopyalanabilen bir değer gösterir.
+
+```tsx
+import { CopyableCell } from "luxtable";
+
+// Kopyalanabilir e-posta
+<CopyableCell value="kullanici@ornek.com" />
+
+// Herhangi bir metin
+<CopyableCell value="ABC-123-XYZ" />
+```
+
+---
+
+## Sütunlarda Kullanım
+
+Sütun tanımlarınızda hücre bileşenlerini nasıl kullanacağınız:
+
+```tsx
+import { 
+  createColumnHelper, 
+  StatusCell, 
+  ProgressCell, 
+  DateCell,
+  CurrencyCell,
+  CopyableCell 
+} from "luxtable";
+
+type Calisan = {
+  isim: string;
+  email: string;
+  durum: string;
+  ilerleme: number;
+  maas: number;
+  iseGirisTarihi: Date;
+};
+
+const columnHelper = createColumnHelper<Calisan>();
+
+const columns = [
+  columnHelper.accessor("isim", { header: "İsim" }),
+  
+  columnHelper.accessor("email", {
+    header: "E-posta",
+    cell: (info) => <CopyableCell value={info.getValue()} />,
+  }),
+  
+  columnHelper.accessor("durum", {
+    header: "Durum",
+    cell: (info) => <StatusCell value={info.getValue()} />,
+  }),
+  
+  columnHelper.accessor("ilerleme", {
+    header: "İlerleme",
+    cell: (info) => <ProgressCell value={info.getValue()} showLabel />,
+  }),
+  
+  columnHelper.accessor("maas", {
+    header: "Maaş",
+    cell: (info) => <CurrencyCell value={info.getValue()} currency="TRY" locale="tr-TR" />,
+  }),
+  
+  columnHelper.accessor("iseGirisTarihi", {
+    header: "İşe Giriş Tarihi",
+    cell: (info) => <DateCell value={info.getValue()} format="short" locale="tr-TR" />,
+  }),
+];
+```

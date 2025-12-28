@@ -1,0 +1,127 @@
+---
+title: Sütun Filtreleme
+description: Tablo sütunlarınıza filtre ekleyin
+---
+
+import { LuxTableFilterDemo } from "../../components/lux-table-demo";
+
+# Sütun Filtreleme
+
+LuxTable, hem metin girişi hem de dropdown seçim filtreleri ile sütun düzeyinde filtrelemeyi destekler.
+
+## Canlı Demo
+
+<LuxTableFilterDemo />
+
+## Temel Kullanım
+
+Tek bir prop ile filtrelemeyi etkinleştirin:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ filtering: true }}
+/>
+```
+
+---
+
+## Filtre Türleri
+
+### Metin Filtresi (Varsayılan)
+
+Metin filtreleri bir sütun içinde serbest metin araması yapmanızı sağlar:
+
+```tsx
+const columns = [
+  columnHelper.accessor("name", { 
+    header: "İsim",
+    // Metin filtresi varsayılandır - meta gerekmez
+  }),
+];
+```
+
+### Dropdown Filtresi
+
+Sınırlı sayıda farklı değere sahip sütunlar için (durum, departman vb.) dropdown filtreler kullanın:
+
+```tsx
+const columns = [
+  columnHelper.accessor("status", { 
+    header: "Durum",
+    meta: { filterVariant: "select" }, // 👈 Dropdown filtre!
+  }),
+  
+  columnHelper.accessor("department", { 
+    header: "Departman",
+    meta: { filterVariant: "select" },
+  }),
+];
+```
+
+Dropdown, verinizdeki benzersiz değerlerle otomatik olarak doldurulur.
+
+---
+
+## Tam Örnek
+
+```tsx
+import { LuxTable, createColumnHelper, StatusCell } from "luxtable";
+
+type Calisan = {
+  isim: string;
+  email: string;
+  departman: string;
+  durum: string;
+};
+
+const data: Calisan[] = [
+  { isim: "Ahmet Yılmaz", email: "ahmet@ornek.com", departman: "Mühendislik", durum: "Aktif" },
+  { isim: "Ayşe Demir", email: "ayse@ornek.com", departman: "Pazarlama", durum: "Aktif" },
+  { isim: "Mehmet Kaya", email: "mehmet@ornek.com", departman: "Mühendislik", durum: "Pasif" },
+];
+
+const columnHelper = createColumnHelper<Calisan>();
+
+const columns = [
+  // Metin filtresi (varsayılan)
+  columnHelper.accessor("isim", { header: "İsim" }),
+  columnHelper.accessor("email", { header: "E-posta" }),
+  
+  // Sınırlı değerli sütunlar için dropdown filtreler
+  columnHelper.accessor("departman", { 
+    header: "Departman",
+    meta: { filterVariant: "select" },
+  }),
+  columnHelper.accessor("durum", { 
+    header: "Durum",
+    meta: { filterVariant: "select" },
+    cell: (info) => <StatusCell value={info.getValue()} />,
+  }),
+];
+
+export default function App() {
+  return (
+    <LuxTable 
+      data={data} 
+      columns={columns} 
+      options={{ filtering: true }}
+    />
+  );
+}
+```
+
+---
+
+## Belirli Sütunlarda Filtrelemeyi Devre Dışı Bırakma
+
+Belirli sütunlarda filtrelemeyi devre dışı bırakabilirsiniz:
+
+```tsx
+columnHelper.accessor("actions", {
+  header: "İşlemler",
+  enableColumnFilter: false, // 👈 Bu sütun için filtre yok
+  cell: (info) => <ActionButtons row={info.row} />,
+});
+```

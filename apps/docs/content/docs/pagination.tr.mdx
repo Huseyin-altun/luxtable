@@ -1,0 +1,96 @@
+---
+title: Sayfalama
+description: Büyük veri setlerini yönetmek için sayfalama ekleyin
+---
+
+# Sayfalama
+
+LuxTable, büyük veri setlerini verimli bir şekilde yönetmek için yerleşik sayfalama içerir.
+
+## Temel Kullanım
+
+Tek bir prop ile sayfalamayı etkinleştirin:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ pagination: true }}
+/>
+```
+
+---
+
+## Varsayılan Sayfa Boyutu
+
+Varsayılan olarak sayfalama, sayfa başına 10 satır gösterir. Bunu özelleştirebilirsiniz:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ 
+    pagination: true,
+    pageSize: 25, // Sayfa başına 25 satır göster
+  }}
+/>
+```
+
+---
+
+## Kontrollü Sayfalama
+
+İleri düzey kullanım durumları için sayfalama durumunu dışarıdan kontrol edebilirsiniz:
+
+```tsx
+import { useState } from "react";
+import { LuxTable, PaginationState } from "luxtable";
+
+export default function App() {
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,  // Mevcut sayfa (0-indeksli)
+    pageSize: 10,  // Sayfa başına satır
+  });
+
+  return (
+    <LuxTable 
+      data={data} 
+      columns={columns} 
+      pagination={pagination}
+      onPaginationChange={setPagination}
+      options={{ pagination: true }} 
+    />
+  );
+}
+```
+
+---
+
+## Sayfalama Kontrolleri
+
+Sayfalama bileşeni şunları içerir:
+
+- **Sayfa navigasyonu** - Önceki/Sonraki butonları
+- **Sayfa göstergesi** - Mevcut sayfa / Toplam sayfa
+- **Sayfa boyutu seçici** - Sayfa başına satır seçin (10, 20, 30, 40, 50)
+- **Satır sayısı** - Toplam satır sayısı
+
+---
+
+## Diğer Özelliklerle Birleştirme
+
+Sayfalama, sıralama ve filtreleme ile sorunsuz çalışır:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ 
+    pagination: true,
+    sorting: true,
+    filtering: true,
+  }}
+/>
+```
+
+Filtreleme uygulandığında, sayfalama yalnızca filtrelenmiş sonuçları göstermek için otomatik olarak ayarlanır.

@@ -1,50 +1,50 @@
 ---
-title: Row Selection
-description: Select single or multiple rows with checkboxes
+title: Satır Seçimi
+description: Checkbox ile tekli veya çoklu satır seçin
 ---
 
 import { LuxTableSelectionDemo } from "../../components/lux-table-demo";
 
-# Row Selection
+# Satır Seçimi
 
-LuxTable supports both single and multiple row selection with built-in checkbox functionality.
+LuxTable, yerleşik checkbox işlevselliği ile hem tekli hem de çoklu satır seçimini destekler.
 
-## Live Demo
+## Canlı Demo
 
 <LuxTableSelectionDemo />
 
-## Basic Usage
+## Temel Kullanım
 
-Enable row selection by specifying the selection mode:
+Seçim modunu belirterek satır seçimini etkinleştirin:
 
 ```tsx
 <LuxTable
   data={data}
   columns={columns}
   options={{
-    selection: "multiple", // or "single"
+    selection: "multiple", // veya "single"
   }}
   onSelectedRowsChange={(selectedRows) => {
-    console.log("Selected:", selectedRows);
+    console.log("Seçilen:", selectedRows);
   }}
 />
 ```
 
 ---
 
-## Selection Modes
+## Seçim Modları
 
-| Mode | Description |
-|------|-------------|
-| `"none"` | No selection (default) |
-| `"single"` | Select one row at a time |
-| `"multiple"` | Select multiple rows with checkboxes |
+| Mod | Açıklama |
+|-----|----------|
+| `"none"` | Seçim yok (varsayılan) |
+| `"single"` | Aynı anda bir satır seç |
+| `"multiple"` | Checkbox ile birden fazla satır seç |
 
 ---
 
-## Getting Selected Data
+## Seçili Verileri Alma
 
-Use the `onSelectedRowsChange` callback to get the selected row data:
+Seçili satır verilerini almak için `onSelectedRowsChange` callback'ini kullanın:
 
 ```tsx
 <LuxTable
@@ -52,10 +52,10 @@ Use the `onSelectedRowsChange` callback to get the selected row data:
   columns={columns}
   options={{ selection: "multiple" }}
   onSelectedRowsChange={(selectedRows) => {
-    // selectedRows contains the full data objects of selected rows
-    console.log("Selected records:", selectedRows);
+    // selectedRows seçili satırların tam veri nesnelerini içerir
+    console.log("Seçili kayıtlar:", selectedRows);
     
-    // Example: Get IDs of selected rows
+    // Örnek: Seçili satırların ID'lerini al
     const selectedIds = selectedRows.map(row => row.id);
   }}
 />
@@ -63,9 +63,9 @@ Use the `onSelectedRowsChange` callback to get the selected row data:
 
 ---
 
-## Controlled Selection
+## Kontrollü Seçim
 
-For advanced use cases, you can control the selection state externally:
+İleri düzey kullanım durumları için seçim durumunu dışarıdan kontrol edebilirsiniz:
 
 ```tsx
 import { useState } from "react";
@@ -85,30 +85,30 @@ export default function App() {
       />
       
       <div>
-        Selected count: {Object.keys(rowSelection).length}
+        Seçili sayısı: {Object.keys(rowSelection).length}
       </div>
     </>
   );
 }
 ```
 
-### RowSelectionState Format
+### RowSelectionState Formatı
 
-The selection state is an object where keys are row indices:
+Seçim durumu, anahtarların satır indeksleri olduğu bir nesnedir:
 
 ```tsx
-// No rows selected
+// Hiç satır seçili değil
 const rowSelection = {};
 
-// First and third rows selected
+// Birinci ve üçüncü satırlar seçili
 const rowSelection = { "0": true, "2": true };
 ```
 
 ---
 
-## Hide Selection Checkbox
+## Seçim Checkbox'ını Gizleme
 
-If you want selection without visible checkboxes (e.g., for row click selection):
+Görünür checkbox olmadan seçim istiyorsanız (örn. satır tıklama seçimi için):
 
 ```tsx
 <LuxTable
@@ -123,9 +123,9 @@ If you want selection without visible checkboxes (e.g., for row click selection)
 
 ---
 
-## Bulk Actions Example
+## Toplu İşlem Örneği
 
-A common pattern is to show bulk action buttons when rows are selected:
+Satırlar seçildiğinde toplu işlem butonları göstermek yaygın bir desendir:
 
 ```tsx
 import { useState } from "react";
@@ -137,20 +137,20 @@ export default function App() {
   const selectedCount = Object.keys(rowSelection).length;
 
   const handleBulkDelete = () => {
-    // Get selected row indices
+    // Seçili satır indekslerini al
     const selectedIndices = Object.keys(rowSelection).map(Number);
-    console.log("Deleting rows:", selectedIndices);
-    // Perform delete action...
-    setRowSelection({}); // Clear selection
+    console.log("Silinen satırlar:", selectedIndices);
+    // Silme işlemini gerçekleştir...
+    setRowSelection({}); // Seçimi temizle
   };
 
   return (
     <div>
       {selectedCount > 0 && (
         <div className="mb-4 p-3 bg-blue-50 rounded flex items-center gap-4">
-          <span>{selectedCount} row(s) selected</span>
+          <span>{selectedCount} satır seçili</span>
           <button onClick={handleBulkDelete} className="text-red-600">
-            Delete Selected
+            Seçilenleri Sil
           </button>
         </div>
       )}

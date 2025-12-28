@@ -1,0 +1,127 @@
+---
+title: Column Filtering
+description: Add filters to your table columns
+---
+
+import { LuxTableFilterDemo } from "../../components/lux-table-demo";
+
+# Column Filtering
+
+LuxTable supports column-level filtering with both text input and dropdown select filters.
+
+## Live Demo
+
+<LuxTableFilterDemo />
+
+## Basic Usage
+
+Enable filtering with a single prop:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ filtering: true }}
+/>
+```
+
+---
+
+## Filter Types
+
+### Text Filter (Default)
+
+Text filters allow free-form searching within a column:
+
+```tsx
+const columns = [
+  columnHelper.accessor("name", { 
+    header: "Name",
+    // Text filter is the default - no meta needed
+  }),
+];
+```
+
+### Dropdown Filter
+
+For columns with limited distinct values (like status, department, etc.), use dropdown filters:
+
+```tsx
+const columns = [
+  columnHelper.accessor("status", { 
+    header: "Status",
+    meta: { filterVariant: "select" }, // 👈 Dropdown filter!
+  }),
+  
+  columnHelper.accessor("department", { 
+    header: "Department",
+    meta: { filterVariant: "select" },
+  }),
+];
+```
+
+The dropdown automatically populates with unique values from your data.
+
+---
+
+## Complete Example
+
+```tsx
+import { LuxTable, createColumnHelper, StatusCell } from "luxtable";
+
+type Employee = {
+  name: string;
+  email: string;
+  department: string;
+  status: string;
+};
+
+const data: Employee[] = [
+  { name: "John Doe", email: "john@example.com", department: "Engineering", status: "Active" },
+  { name: "Jane Smith", email: "jane@example.com", department: "Marketing", status: "Active" },
+  { name: "Bob Wilson", email: "bob@example.com", department: "Engineering", status: "Inactive" },
+];
+
+const columnHelper = createColumnHelper<Employee>();
+
+const columns = [
+  // Text filter (default)
+  columnHelper.accessor("name", { header: "Name" }),
+  columnHelper.accessor("email", { header: "Email" }),
+  
+  // Dropdown filters for limited value columns
+  columnHelper.accessor("department", { 
+    header: "Department",
+    meta: { filterVariant: "select" },
+  }),
+  columnHelper.accessor("status", { 
+    header: "Status",
+    meta: { filterVariant: "select" },
+    cell: (info) => <StatusCell value={info.getValue()} />,
+  }),
+];
+
+export default function App() {
+  return (
+    <LuxTable 
+      data={data} 
+      columns={columns} 
+      options={{ filtering: true }}
+    />
+  );
+}
+```
+
+---
+
+## Disable Filtering for Specific Columns
+
+You can disable filtering on specific columns:
+
+```tsx
+columnHelper.accessor("actions", {
+  header: "Actions",
+  enableColumnFilter: false, // 👈 No filter for this column
+  cell: (info) => <ActionButtons row={info.row} />,
+});
+```
