@@ -1,0 +1,163 @@
+---
+title: Toolbar
+description: Global arama, sütun görünürlüğü ve filtre kontrolleri içeren güçlü bir toolbar ekleyin
+---
+
+import { LuxTableToolbarDemo } from "../../components/lux-table-demo";
+
+# Toolbar
+
+LuxTable, global arama, sütun görünürlük yönetimi ve filtre açma/kapama butonları gibi temel tablo kontrollerini sağlayan yerleşik bir toolbar içerir.
+
+## Canlı Demo
+
+<LuxTableToolbarDemo />
+
+## Temel Kullanım
+
+Toolbar'ı basit bir seçenekle etkinleştirin:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ 
+    showToolbar: true,  // 👈 Toolbar'ı etkinleştir
+    filtering: true     // Sütun filtrelemeyi etkinleştir (filtre toggle için)
+  }}
+/>
+```
+
+---
+
+## Toolbar Özellikleri
+
+### 🔍 Global Arama
+
+Tek bir input alanıyla tablonuzdaki tüm sütunlarda arama yapın. Arama global olarak uygulanır ve herhangi bir görünür sütunda sorguyla eşleşen satırları filtreler.
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ 
+    showToolbar: true,
+    showGlobalSearch: true,  // 👈 Varsayılan olarak açık
+  }}
+/>
+```
+
+### 👁️ Sütun Görünürlüğü
+
+Sezgisel bir dropdown menü ile hangi sütunların görünür olduğunu kontrol edin. Özellikler:
+
+- **Tek tek sütunları aç/kapa** - Belirli sütunları göster/gizle
+- **Tümünü Göster butonu** - Tüm gizli sütunları hızlıca göster
+- **Sıfırla butonu** - Varsayılan görünürlük durumuna dön
+- **Gizli sayı badge'i** - Gizli sütun sayısının görsel göstergesi
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ 
+    showToolbar: true,
+    showColumnVisibility: true,  // 👈 Varsayılan olarak açık
+  }}
+/>
+```
+
+### 🔧 Filtre Açma/Kapama
+
+Sütun filtre satırının görünürlüğünü bir butonla değiştirin. Bu, `filtering` seçeneğiyle birlikte çalışır:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ 
+    showToolbar: true,
+    filtering: true,  // 👈 Filtre toggle'ın görünmesi için gerekli
+  }}
+/>
+```
+
+---
+
+## Tam Örnek
+
+```tsx
+import { LuxTable, createColumnHelper, StatusCell } from "luxtable";
+
+type Employee = {
+  id: number;
+  name: string;
+  department: string;
+  role: string;
+  status: string;
+};
+
+const data: Employee[] = [
+  { id: 1, name: "Ahmet Yılmaz", department: "Yazılım", role: "Geliştirici", status: "Aktif" },
+  { id: 2, name: "Ayşe Kaya", department: "Pazarlama", role: "Yönetici", status: "Aktif" },
+  { id: 3, name: "Mehmet Demir", department: "Yazılım", role: "Tasarımcı", status: "Pasif" },
+];
+
+const columnHelper = createColumnHelper<Employee>();
+
+const columns = [
+  columnHelper.accessor("id", { header: "ID" }),
+  columnHelper.accessor("name", { header: "İsim" }),
+  columnHelper.accessor("department", { 
+    header: "Departman",
+    meta: { filterVariant: "select" },
+  }),
+  columnHelper.accessor("role", { header: "Rol" }),
+  columnHelper.accessor("status", { 
+    header: "Durum",
+    meta: { filterVariant: "select" },
+    cell: (info) => <StatusCell value={info.getValue()} />,
+  }),
+];
+
+export default function App() {
+  return (
+    <LuxTable 
+      data={data} 
+      columns={columns} 
+      options={{ 
+        pagination: true,
+        sorting: true,
+        filtering: true,
+        showToolbar: true,
+        showGlobalSearch: true,
+        showColumnVisibility: true,
+      }}
+    />
+  );
+}
+```
+
+---
+
+## Toolbar Seçenekleri Referansı
+
+| Seçenek | Tip | Varsayılan | Açıklama |
+|---------|-----|------------|----------|
+| `showToolbar` | `boolean` | `false` | Toolbar'ı göster/gizle |
+| `showGlobalSearch` | `boolean` | `true` | Global arama input'unu göster (toolbar görünür olduğunda) |
+| `showColumnVisibility` | `boolean` | `true` | Sütun görünürlük dropdown'ını göster (toolbar görünür olduğunda) |
+| `filtering` | `boolean` | `false` | Sütun filtrelemeyi etkinleştir (true olduğunda filtre toggle butonu görünür) |
+
+---
+
+## Toolbar Görünümünü Özelleştirme
+
+Toolbar otomatik olarak temanıza (açık/koyu mod) uyum sağlar. Özellikleri:
+
+- **Modern yuvarlatılmış tasarım** - ince kenarlıklarla
+- **Duyarlı (responsive) düzen** - mobilde butonlar yalnızca ikon gösterir
+- **Badge göstergeleri** - gizli sütunlar için
+- **Yumuşak geçişler** ve hover efektleri
+
+Toolbar, LuxTable'ın diğer stillerine sorunsuzca entegre olur.

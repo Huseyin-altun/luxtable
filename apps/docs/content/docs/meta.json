@@ -5,6 +5,7 @@
     "index",
     "quick-start",
     "---Features---",
+    "toolbar",
     "column-filtering",
     "sorting",
     "pagination",
@@ -17,3 +18,4 @@
     "api-reference"
   ]
 }
+

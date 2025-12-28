@@ -23,6 +23,14 @@ export interface LuxTableOptions {
     selection?: "single" | "multiple" | "none";
     /** Show selection checkbox (default: true if selection !== "none") */
     showSelectionCheckbox?: boolean;
+    
+    // Toolbar Options
+    /** Show toolbar with search and controls (default: false) */
+    showToolbar?: boolean;
+    /** Show global search in toolbar (default: true when toolbar is shown) */
+    showGlobalSearch?: boolean;
+    /** Show column visibility controls in toolbar (default: true when toolbar is shown) */
+    showColumnVisibility?: boolean;
 }
 
 export interface LuxTableProps<TData> {

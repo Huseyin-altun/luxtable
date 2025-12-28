@@ -5,6 +5,7 @@
     "index",
     "quick-start",
     "---Özellikler---",
+    "toolbar",
     "column-filtering",
     "sorting",
     "pagination",
@@ -17,3 +18,4 @@
     "api-reference"
   ]
 }
+

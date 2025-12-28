@@ -369,3 +369,31 @@ export function LuxTableActionsDemo() {
         </div>
     );
 }
+
+// =====================================================
+// METHOD 8: Toolbar Demo - Global Search, Column Visibility & Filter Toggle
+// =====================================================
+export function LuxTableToolbarDemo() {
+    return (
+        <div className="my-6 space-y-4">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
+                <p className="text-sm text-gray-500 dark:text-gray-400 px-4 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                    🔧 The toolbar includes global search, column visibility toggle, and filter controls!
+                </p>
+            </div>
+            <LuxTable
+                data={employeeData}
+                columns={filterColumns}
+                options={{
+                    pagination: true,
+                    sorting: true,
+                    filtering: true,
+                    showToolbar: true,
+                    showGlobalSearch: true,
+                    showColumnVisibility: true,
+                }}
+            />
+        </div>
+    );
+}
+

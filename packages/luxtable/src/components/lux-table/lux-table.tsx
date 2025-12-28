@@ -15,6 +15,7 @@ import {
     ColumnDef,
     Row,
 } from "@tanstack/react-table";
+import { CheckCircle2 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import {
     Table,
@@ -26,6 +27,7 @@ import {
 } from "../table";
 import { ColumnFilter } from "./column-filter";
 import { TablePagination } from "./pagination";
+import { TableToolbar } from "./table-toolbar";
 import { Checkbox } from "../ui/checkbox";
 import type { LuxTableProps } from "./types";
 
@@ -115,6 +117,12 @@ export function LuxTable<TData>({
     // Column filters state
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
+    // Global filter state
+    const [globalFilter, setGlobalFilter] = React.useState("");
+
+    // Column filtering visibility (controlled by toolbar)
+    const [filteringVisible, setFilteringVisible] = React.useState(options?.filtering ?? false);
+
     // Row selection state
     const [internalRowSelection, setInternalRowSelection] = React.useState<RowSelectionState>({});
 
@@ -160,7 +168,9 @@ export function LuxTable<TData>({
             sorting,
             columnFilters,
             rowSelection,
+            globalFilter,
         },
+        onGlobalFilterChange: setGlobalFilter,
         onSortingChange: (updater) => {
             const newSorting = typeof updater === "function" ? updater(sorting) : updater;
 
@@ -204,24 +214,29 @@ export function LuxTable<TData>({
     // Calculate visible column count (for empty state colspan)
     const visibleColumnCount = tableColumns.length;
 
+    // Toolbar visibility
+    const showToolbar = options?.showToolbar ?? false;
+    const showGlobalSearch = options?.showGlobalSearch ?? true;
+    const showColumnVisibility = options?.showColumnVisibility ?? true;
+
     return (
         <div className={cn("w-full space-y-4", className)}>
+            {/* Toolbar */}
+            {showToolbar && (
+                <TableToolbar
+                    table={table}
+                    showFiltering={options?.filtering !== undefined}
+                    filteringEnabled={filteringVisible}
+                    onFilteringToggle={setFilteringVisible}
+                    showGlobalSearch={showGlobalSearch}
+                    showColumnVisibility={showColumnVisibility}
+                />
+            )}
+
             {/* Selection info bar */}
             {enableRowSelection && Object.keys(rowSelection).length > 0 && (
                 <div className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                    </svg>
+                    <CheckCircle2 className="w-4 h-4" />
                     <span>
                         <strong>{Object.keys(rowSelection).length}</strong> rows selected
                         {table.getFilteredRowModel().rows.length > 0 && (
@@ -267,7 +282,7 @@ export function LuxTable<TData>({
                         ))}
 
                         {/* Filter Row */}
-                        {options?.filtering && (
+                        {filteringVisible && (
                             <TableRow className="bg-slate-50/50 dark:bg-slate-900/50">
                                 {table.getHeaderGroups()[0]?.headers.map((header) => {
                                     const isSelectionColumn = header.id === "__selection__";

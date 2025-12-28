@@ -1,0 +1,163 @@
+---
+title: Toolbar
+description: Add a powerful toolbar with global search, column visibility and filter controls
+---
+
+import { LuxTableToolbarDemo } from "../../components/lux-table-demo";
+
+# Toolbar
+
+LuxTable includes a built-in toolbar that provides essential table controls including global search, column visibility management, and filter toggle buttons.
+
+## Live Demo
+
+<LuxTableToolbarDemo />
+
+## Basic Usage
+
+Enable the toolbar with a simple option:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ 
+    showToolbar: true,  // 👈 Enable the toolbar
+    filtering: true     // Enable column filtering (used with filter toggle)
+  }}
+/>
+```
+
+---
+
+## Toolbar Features
+
+### 🔍 Global Search
+
+Search across all columns in your table with a single input field. The search is applied globally and filters rows that match the query in any visible column.
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ 
+    showToolbar: true,
+    showGlobalSearch: true,  // 👈 Enabled by default
+  }}
+/>
+```
+
+### 👁️ Column Visibility
+
+Control which columns are visible with an intuitive dropdown menu. Features include:
+
+- **Toggle individual columns** - Show/hide specific columns
+- **Show All button** - Quickly reveal all hidden columns
+- **Reset button** - Return to default visibility state
+- **Hidden count badge** - Visual indicator of hidden columns
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ 
+    showToolbar: true,
+    showColumnVisibility: true,  // 👈 Enabled by default
+  }}
+/>
+```
+
+### 🔧 Filter Toggle
+
+Toggle the column filter row visibility with a button. This works in conjunction with the `filtering` option:
+
+```tsx
+<LuxTable 
+  data={data} 
+  columns={columns} 
+  options={{ 
+    showToolbar: true,
+    filtering: true,  // 👈 Required for filter toggle to appear
+  }}
+/>
+```
+
+---
+
+## Complete Example
+
+```tsx
+import { LuxTable, createColumnHelper, StatusCell } from "luxtable";
+
+type Employee = {
+  id: number;
+  name: string;
+  department: string;
+  role: string;
+  status: string;
+};
+
+const data: Employee[] = [
+  { id: 1, name: "John Doe", department: "Engineering", role: "Developer", status: "Active" },
+  { id: 2, name: "Jane Smith", department: "Marketing", role: "Manager", status: "Active" },
+  { id: 3, name: "Bob Wilson", department: "Engineering", role: "Designer", status: "Inactive" },
+];
+
+const columnHelper = createColumnHelper<Employee>();
+
+const columns = [
+  columnHelper.accessor("id", { header: "ID" }),
+  columnHelper.accessor("name", { header: "Name" }),
+  columnHelper.accessor("department", { 
+    header: "Department",
+    meta: { filterVariant: "select" },
+  }),
+  columnHelper.accessor("role", { header: "Role" }),
+  columnHelper.accessor("status", { 
+    header: "Status",
+    meta: { filterVariant: "select" },
+    cell: (info) => <StatusCell value={info.getValue()} />,
+  }),
+];
+
+export default function App() {
+  return (
+    <LuxTable 
+      data={data} 
+      columns={columns} 
+      options={{ 
+        pagination: true,
+        sorting: true,
+        filtering: true,
+        showToolbar: true,
+        showGlobalSearch: true,
+        showColumnVisibility: true,
+      }}
+    />
+  );
+}
+```
+
+---
+
+## Toolbar Options Reference
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `showToolbar` | `boolean` | `false` | Show/hide the toolbar |
+| `showGlobalSearch` | `boolean` | `true` | Show global search input (when toolbar is visible) |
+| `showColumnVisibility` | `boolean` | `true` | Show column visibility dropdown (when toolbar is visible) |
+| `filtering` | `boolean` | `false` | Enable column filtering (filter toggle button appears when true) |
+
+---
+
+## Customizing Toolbar Appearance
+
+The toolbar automatically adapts to your theme (light/dark mode). It features:
+
+- **Modern rounded design** with subtle borders
+- **Responsive layout** - buttons show icons only on mobile
+- **Badge indicators** for hidden columns
+- **Smooth transitions** and hover effects
+
+The toolbar integrates seamlessly with the rest of the LuxTable styling.
