@@ -43,9 +43,11 @@ function createSelectionColumn<TData>(): ColumnDef<TData, unknown> {
         id: "__selection__",
         header: ({ table }) => (
             <Checkbox
-                checked={table.getIsAllPageRowsSelected()}
-                indeterminate={table.getIsSomePageRowsSelected()}
-                onChange={table.getToggleAllPageRowsSelectedHandler()}
+                checked={
+                    table.getIsAllPageRowsSelected() ||
+                    (table.getIsSomePageRowsSelected() && "indeterminate")
+                }
+                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
                 aria-label="Select all rows"
             />
         ),
@@ -53,7 +55,7 @@ function createSelectionColumn<TData>(): ColumnDef<TData, unknown> {
             <Checkbox
                 checked={row.getIsSelected()}
                 disabled={!row.getCanSelect()}
-                onChange={row.getToggleSelectedHandler()}
+                onCheckedChange={(value) => row.toggleSelected(!!value)}
                 aria-label="Select row"
             />
         ),

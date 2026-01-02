@@ -2,6 +2,14 @@
 
 import * as React from "react";
 import { Column } from "@tanstack/react-table";
+import { Input } from "../ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "../ui/select";
 import { cn } from "../../lib/utils";
 
 // ============================================================================
@@ -14,7 +22,7 @@ interface ColumnFilterProps<TData, TValue> {
 
 /**
  * Column filter component
- * Rendered as text input or select dropdown
+ * Rendered as text input or select dropdown using shadcn/ui components
  * 
  * @example
  * ```tsx
@@ -40,49 +48,52 @@ export function ColumnFilter<TData, TValue>({ column }: ColumnFilterProps<TData,
         return Array.from(values).sort();
     }, [column, filterVariant]);
 
-    // Select (dropdown) filter
+    // Select (dropdown) filter using shadcn/ui Select
     if (filterVariant === "select") {
         return (
-            <select
+            <Select
                 value={(columnFilterValue ?? "") as string}
-                onChange={(e) => column.setFilterValue(e.target.value || undefined)}
-                className={cn(
-                    "w-full h-8 px-2 text-xs rounded-md",
-                    "border border-slate-200 dark:border-slate-700",
-                    "bg-white dark:bg-slate-900",
-                    "text-slate-900 dark:text-slate-100",
-                    "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0",
-                    "cursor-pointer transition-colors"
-                )}
-                onClick={(e) => e.stopPropagation()}
+                onValueChange={(value) => column.setFilterValue(value === "__all__" ? undefined : value)}
             >
-                <option value="">All</option>
-                {sortedUniqueValues.map((value) => (
-                    <option key={value} value={value}>
-                        {value}
-                    </option>
-                ))}
-            </select>
+                <SelectTrigger
+                    className={cn(
+                        "h-8 text-xs",
+                        "border-slate-200 dark:border-slate-700",
+                        "bg-white dark:bg-slate-900",
+                        "text-slate-900 dark:text-slate-100"
+                    )}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <SelectValue placeholder="All" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="__all__">All</SelectItem>
+                    {sortedUniqueValues.map((value) => (
+                        <SelectItem key={value} value={value}>
+                            {value}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
         );
     }
 
-    // Text input filter (default)
+    // Text input filter using shadcn/ui Input
     return (
-        <input
+        <Input
             type="text"
             value={(columnFilterValue ?? "") as string}
             onChange={(e) => column.setFilterValue(e.target.value || undefined)}
             placeholder="Filter..."
             className={cn(
-                "w-full h-8 px-2 text-xs rounded-md",
-                "border border-slate-200 dark:border-slate-700",
+                "h-8 text-xs",
+                "border-slate-200 dark:border-slate-700",
                 "bg-white dark:bg-slate-900",
                 "text-slate-900 dark:text-slate-100",
-                "placeholder:text-slate-400 dark:placeholder:text-slate-500",
-                "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0",
-                "transition-colors"
+                "placeholder:text-slate-400 dark:placeholder:text-slate-500"
             )}
             onClick={(e) => e.stopPropagation()}
         />
     );
 }
+
