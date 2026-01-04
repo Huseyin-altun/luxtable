@@ -13,6 +13,7 @@
     "table",
     "data-display"
   ],
+  "docs": "# LuxTable Cell Renderers\n\nPre-built cell renderers for common data types.\n\n## Available Renderers\n\n### StatusCell\nDisplays status badges with customizable colors.\n\n```tsx\nimport { StatusCell } from 'luxtable';\n\n<StatusCell \n  value=\"active\" \n  colorMap={{\n    'active': '#10b981',\n    'inactive': '#ef4444',\n    'pending': '#f59e0b'\n  }}\n  labelMap={{\n    'active': 'Active',\n    'inactive': 'Inactive',\n    'pending': 'Pending'\n  }}\n/>\n```\n\n### ProgressCell\nDisplays progress bars with percentage.\n\n```tsx\nimport { ProgressCell } from 'luxtable';\n\n<ProgressCell value={75} showLabel={true} />\n```\n\n### DateCell\nFormats date values with locale support.\n\n```tsx\nimport { DateCell } from 'luxtable';\n\n<DateCell value=\"2024-01-15\" format=\"long\" locale=\"en-US\" />\n```\n\n### CopyableCell\nText with copy-to-clipboard functionality.\n\n```tsx\nimport { CopyableCell } from 'luxtable';\n\n<CopyableCell value=\"TASK-001\" />\n```\n\n### CurrencyCell\nFormats currency values.\n\n```tsx\nimport { CurrencyCell } from 'luxtable';\n\n<CurrencyCell value={1234.56} currency=\"USD\" locale=\"en-US\" />\n```\n\n### BooleanCell\nDisplays boolean values as icons or text.\n\n```tsx\nimport { BooleanCell } from 'luxtable';\n\n<BooleanCell value={true} />\n```\n",
   "files": [
     {
       "path": "components/cell-renderers/status-cell.tsx",

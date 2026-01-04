@@ -15,6 +15,7 @@
     "table",
     "utility"
   ],
+  "docs": "# LuxTable Column Helper\n\nType-safe column definition helper for TanStack Table.\n\n## Usage\n\n```tsx\nimport { createColumnHelper } from 'luxtable';\n\ninterface User {\n  id: number;\n  name: string;\n  email: string;\n  role: string;\n}\n\nconst columnHelper = createColumnHelper<User>();\n\nconst columns = [\n  // Accessor column - display data from a field\n  columnHelper.accessor('name', {\n    header: 'Name',\n    cell: (info) => info.getValue(),\n  }),\n\n  // Accessor with custom cell renderer\n  columnHelper.accessor('email', {\n    header: 'Email',\n    cell: (info) => <a href={`mailto:${info.getValue()}`}>{info.getValue()}</a>,\n  }),\n\n  // Display column - for custom content like actions\n  columnHelper.display({\n    id: 'actions',\n    header: 'Actions',\n    cell: ({ row }) => (\n      <div className=\"flex gap-2\">\n        <button onClick={() => handleEdit(row.original)}>Edit</button>\n        <button onClick={() => handleDelete(row.original.id)}>Delete</button>\n      </div>\n    ),\n  }),\n];\n```\n\n## Column Options\n\n- `header` - Column header text or render function\n- `cell` - Cell render function\n- `size` - Column width in pixels\n- `enableSorting` - Enable/disable sorting (default: true)\n- `enableHiding` - Enable/disable column hiding (default: true)\n- `meta` - Custom metadata (e.g., filterVariant: 'select')\n",
   "files": [
     {
       "path": "lib/column-helper.tsx",

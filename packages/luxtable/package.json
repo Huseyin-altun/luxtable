@@ -1,6 +1,6 @@
 {
   "name": "luxtable",
-  "version": "0.3.2",
+  "version": "0.3.4",
   "private": false,
   "description": "Enterprise-Grade Data Management. Minimalist Aesthetics.",
   "keywords": [
@@ -35,6 +35,7 @@
     "dist",
     "registry",
     "README.md",
+    "USAGE.md",
     "EXAMPLE.md"
   ],
   "publishConfig": {

@@ -131,6 +131,120 @@ function generateLuxTableRegistry() {
         ),
     ].filter(Boolean);
 
+    const docsContent = `# LuxTable - Enterprise Data Table
+
+## Installation
+
+\`\`\`bash
+npm install luxtable
+# or
+pnpm add luxtable
+\`\`\`
+
+## Quick Start (Vite + React + TypeScript)
+
+### 1. Configure TailwindCSS
+
+Add to your \`tailwind.config.js\`:
+\`\`\`js
+content: [
+  "./node_modules/luxtable/**/*.{js,ts,jsx,tsx}",
+]
+\`\`\`
+
+### 2. Add CSS Variables
+
+Add to your \`index.css\`:
+\`\`\`css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --border: 214.3 31.8% 91.4%;
+  --radius: 0.5rem;
+}
+\`\`\`
+
+### 3. Basic Usage
+
+\`\`\`tsx
+import { LuxTable, createColumnHelper } from 'luxtable';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  status: 'Active' | 'Inactive';
+}
+
+const data: User[] = [
+  { id: 1, name: 'John Doe', email: 'john@example.com', status: 'Active' },
+  { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'Inactive' },
+];
+
+const columnHelper = createColumnHelper<User>();
+
+const columns = [
+  columnHelper.accessor('name', { header: 'Name' }),
+  columnHelper.accessor('email', { header: 'Email' }),
+  columnHelper.accessor('status', { header: 'Status' }),
+];
+
+function App() {
+  return (
+    <LuxTable
+      data={data}
+      columns={columns}
+      options={{
+        pagination: true,
+        sorting: true,
+        filtering: true,
+        showToolbar: true,
+        selection: 'multiple',
+      }}
+    />
+  );
+}
+\`\`\`
+
+## Features
+
+- ✅ Sorting (single & multi-column)
+- ✅ Pagination with page size options
+- ✅ Column filtering (text & select)
+- ✅ Global search
+- ✅ Row selection (single & multiple)
+- ✅ Column visibility toggle
+- ✅ Dark mode support
+- ✅ TypeScript support
+- ✅ TanStack Table v8
+
+## Cell Renderers
+
+\`\`\`tsx
+import { StatusCell, DateCell, ProgressCell, CopyableCell } from 'luxtable';
+
+// Use in column definitions
+columnHelper.accessor('status', {
+  header: 'Status',
+  cell: (info) => <StatusCell value={info.getValue()} />
+});
+\`\`\`
+
+## Links
+
+- Documentation: https://luxtable.dev/docs
+- GitHub: https://github.com/luxtable/luxtable
+- npm: https://www.npmjs.com/package/luxtable
+`;
+
     const registry = {
         $schema: 'https://ui.shadcn.com/schema/registry-item.json',
         name: 'lux-table',
@@ -152,7 +266,7 @@ function generateLuxTableRegistry() {
             'select',
         ],
         categories: ['table', 'data-display'],
-        docs: 'Visit https://luxtable.dev/docs for full documentation and examples.',
+        docs: docsContent,
         files,
     };
 
@@ -192,6 +306,79 @@ function generateCellRenderersRegistry() {
         return entry;
     }).filter(Boolean);
 
+    const cellRenderersDocsContent = `# LuxTable Cell Renderers
+
+Pre-built cell renderers for common data types.
+
+## Available Renderers
+
+### StatusCell
+Displays status badges with customizable colors.
+
+\`\`\`tsx
+import { StatusCell } from 'luxtable';
+
+<StatusCell 
+  value="active" 
+  colorMap={{
+    'active': '#10b981',
+    'inactive': '#ef4444',
+    'pending': '#f59e0b'
+  }}
+  labelMap={{
+    'active': 'Active',
+    'inactive': 'Inactive',
+    'pending': 'Pending'
+  }}
+/>
+\`\`\`
+
+### ProgressCell
+Displays progress bars with percentage.
+
+\`\`\`tsx
+import { ProgressCell } from 'luxtable';
+
+<ProgressCell value={75} showLabel={true} />
+\`\`\`
+
+### DateCell
+Formats date values with locale support.
+
+\`\`\`tsx
+import { DateCell } from 'luxtable';
+
+<DateCell value="2024-01-15" format="long" locale="en-US" />
+\`\`\`
+
+### CopyableCell
+Text with copy-to-clipboard functionality.
+
+\`\`\`tsx
+import { CopyableCell } from 'luxtable';
+
+<CopyableCell value="TASK-001" />
+\`\`\`
+
+### CurrencyCell
+Formats currency values.
+
+\`\`\`tsx
+import { CurrencyCell } from 'luxtable';
+
+<CurrencyCell value={1234.56} currency="USD" locale="en-US" />
+\`\`\`
+
+### BooleanCell
+Displays boolean values as icons or text.
+
+\`\`\`tsx
+import { BooleanCell } from 'luxtable';
+
+<BooleanCell value={true} />
+\`\`\`
+`;
+
     const registry = {
         $schema: 'https://ui.shadcn.com/schema/registry-item.json',
         name: 'lux-table-cell-renderers',
@@ -204,6 +391,7 @@ function generateCellRenderersRegistry() {
         ],
         registryDependencies: [],
         categories: ['table', 'data-display'],
+        docs: cellRenderersDocsContent,
         files,
     };
 
@@ -223,6 +411,61 @@ function generateColumnHelperRegistry() {
         ),
     ].filter(Boolean);
 
+    const columnHelperDocsContent = `# LuxTable Column Helper
+
+Type-safe column definition helper for TanStack Table.
+
+## Usage
+
+\`\`\`tsx
+import { createColumnHelper } from 'luxtable';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+}
+
+const columnHelper = createColumnHelper<User>();
+
+const columns = [
+  // Accessor column - display data from a field
+  columnHelper.accessor('name', {
+    header: 'Name',
+    cell: (info) => info.getValue(),
+  }),
+
+  // Accessor with custom cell renderer
+  columnHelper.accessor('email', {
+    header: 'Email',
+    cell: (info) => <a href={\`mailto:\${info.getValue()}\`}>{info.getValue()}</a>,
+  }),
+
+  // Display column - for custom content like actions
+  columnHelper.display({
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row }) => (
+      <div className="flex gap-2">
+        <button onClick={() => handleEdit(row.original)}>Edit</button>
+        <button onClick={() => handleDelete(row.original.id)}>Delete</button>
+      </div>
+    ),
+  }),
+];
+\`\`\`
+
+## Column Options
+
+- \`header\` - Column header text or render function
+- \`cell\` - Cell render function
+- \`size\` - Column width in pixels
+- \`enableSorting\` - Enable/disable sorting (default: true)
+- \`enableHiding\` - Enable/disable column hiding (default: true)
+- \`meta\` - Custom metadata (e.g., filterVariant: 'select')
+`;
+
     const registry = {
         $schema: 'https://ui.shadcn.com/schema/registry-item.json',
         name: 'lux-table-column-helper',
@@ -237,6 +480,7 @@ function generateColumnHelperRegistry() {
             'https://unpkg.com/luxtable/registry/lux-table.json',
         ],
         categories: ['table', 'utility'],
+        docs: columnHelperDocsContent,
         files,
     };
 
