@@ -134,7 +134,7 @@ export function CopyableCell({
                 ${className || ""}
             `}
         >
-            <span className="select-none">{value}</span>
+            <span className="select-none text-[hsl(var(--lux-table-cell-foreground))]">{value}</span>
 
             {/* Copy/Check icon */}
             <span

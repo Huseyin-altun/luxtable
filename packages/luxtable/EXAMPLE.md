@@ -342,7 +342,7 @@ module.exports = {
 
 ## 💡 Need Help?
 
-- GitHub Issues: [github.com/luxtable/luxtable/issues](https://github.com/luxtable/luxtable/issues)
+- GitHub Issues: [github.com/Huseyin-altun/luxtable/issues](https://github.com/Huseyin-altun/luxtable/issues)
 - Documentation: [luxtable.dev/docs](https://luxtable.dev/docs)
 
 Happy coding! 🎉

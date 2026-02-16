@@ -16,7 +16,8 @@ export interface ColumnOptions<TData, TValue> {
   id?: string;
   header?: string | ((context: HeaderContext<TData, TValue>) => React.ReactNode);
   cell?: (info: CellContext<TData, TValue>) => React.ReactNode;
-
+  /** Column width/size */
+  size?: number;
   enableSorting?: boolean;
   /** Column meta information (e.g. filterVariant) */
   meta?: {
@@ -73,6 +74,8 @@ export function createColumnHelper<TData>() {
         ...column,
         // enableSorting is true by default
         enableSorting: column?.enableSorting !== false,
+        // Pass size if provided
+        size: column?.size,
         // Pass meta information (filterVariant etc.)
         meta: column?.meta,
         // Use LuxDataTableColumnHeader if header is string or undefined
@@ -84,16 +87,9 @@ export function createColumnHelper<TData>() {
               title={typeof headerContent === 'string' ? headerContent : toTitleCase(accessor)}
             />
           ),
-        // If cell is not defined, show value directly
-        cell: column?.cell || ((info: CellContext<TData, TValue>) => {
-          const value = info.getValue();
-          // if null or undefined, show -
-          if (value === null || value === undefined) {
-            return "-";
-          }
-          // If string or number, show directly
-          return String(value);
-        }),
+        // Only add default cell if cell is not explicitly provided
+        // This allows LuxTable's cellConfig to work
+        ...(column?.cell ? { cell: column.cell } : {}),
       };
       return helper.accessor(accessor as any, finalColumn as any);
     },
@@ -191,11 +187,8 @@ export function createColumnsFromData<TData extends Record<string, unknown>>(
 
     return helper.accessor(key as any, {
       header: ({ column }: HeaderContext<TData, unknown>) => <LuxDataTableColumnHeader column={column} title={headerText} />,
-      cell: cellRenderer || ((info) => {
-        const value = info.getValue();
-        if (value === null || value === undefined) return "-";
-        return String(value);
-      }),
+      // Only add cell if explicitly provided - this allows LuxTable's cellConfig to work
+      ...(cellRenderer ? { cell: cellRenderer } : {}),
     } as any);
   });
 }

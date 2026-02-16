@@ -75,8 +75,8 @@ export interface ProgressCellProps {
  */
 export function ProgressCell({
     value,
-    barColor = "bg-blue-600",
-    bgColor = "bg-gray-200 dark:bg-gray-700",
+    barColor = "bg-[hsl(var(--lux-progress-bar))]",
+    bgColor = "bg-[hsl(var(--lux-progress-bg))]",
     showLabel = false,
     className,
 }: ProgressCellProps) {
@@ -92,7 +92,7 @@ export function ProgressCell({
                 />
             </div>
             {showLabel && (
-                <span className="text-xs text-gray-500 dark:text-gray-400 w-8">
+                <span className="text-xs text-[hsl(var(--lux-progress-text))] w-8">
                     {value}%
                 </span>
             )}

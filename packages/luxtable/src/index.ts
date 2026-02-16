@@ -21,6 +21,7 @@ export * from "./components/ui/separator";
 // Utilities
 export * from "./lib/utils";
 export * from "./lib/column-helper";
+export * from "./lib/cell-config";
 
 // TanStack Table re-exports
 export { 

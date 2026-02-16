@@ -32,7 +32,7 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <thead
         ref={ref}
-        className={cn("[&_tr]:border-b [&_tr]:border-slate-200 dark:[&_tr]:border-slate-800", className)}
+        className={cn("[&_tr]:border-b [&_tr]:border-[hsl(var(--lux-table-header-border))]", className)}
         {...props}
     />
 ));
@@ -65,7 +65,7 @@ const TableFooter = React.forwardRef<
     <tfoot
         ref={ref}
         className={cn(
-            "border-t border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-800/50 font-medium [&>tr]:last:border-b-0",
+            "border-t border-[hsl(var(--lux-table-footer-border))] bg-[hsl(var(--lux-table-footer-background))] text-[hsl(var(--lux-table-footer-foreground))] font-medium [&>tr]:last:border-b-0",
             className
         )}
         {...props}
@@ -84,9 +84,9 @@ const TableRow = React.forwardRef<
     <tr
         ref={ref}
         className={cn(
-            "border-b border-slate-200 dark:border-slate-800 transition-colors",
-            "hover:bg-slate-100/50 dark:hover:bg-slate-800/50",
-            "data-[state=selected]:bg-slate-100 dark:data-[state=selected]:bg-slate-800",
+            "border-b border-[hsl(var(--lux-table-row-border))] transition-colors",
+            "hover:bg-[hsl(var(--lux-table-row-hover))]",
+            "data-[state=selected]:bg-[hsl(var(--lux-table-row-selected))]",
             className
         )}
         {...props}
@@ -106,7 +106,7 @@ const TableHead = React.forwardRef<
         <th
             ref={ref}
             className={cn(
-                "h-10 px-4 text-left align-middle font-medium text-slate-500 dark:text-slate-400",
+                "h-10 px-4 text-left align-middle font-medium text-[hsl(var(--lux-table-header-foreground))]",
                 "[&:has([role=checkbox])]:pr-0",
                 "group", // Enable group-hover for action buttons
                 className
@@ -132,9 +132,15 @@ const TableCell = React.forwardRef<
     <td
         ref={ref}
         className={cn(
-            "p-4 align-middle [&:has([role=checkbox])]:pr-0",
+            "p-4 align-middle text-[hsl(var(--lux-table-cell-foreground))] [&:has([role=checkbox])]:pr-0",
+            "[&>*]:text-[hsl(var(--lux-table-cell-foreground))]",
+            "[&_*]:text-[hsl(var(--lux-table-cell-foreground))]",
             className
         )}
+        style={{
+            color: 'hsl(var(--lux-table-cell-foreground))',
+            ...props.style,
+        }}
         {...props}
     />
 ));
@@ -150,7 +156,7 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <caption
         ref={ref}
-        className={cn("mt-4 text-sm text-slate-500 dark:text-slate-400", className)}
+        className={cn("mt-4 text-sm text-[hsl(var(--lux-table-cell-muted))]", className)}
         {...props}
     />
 ));

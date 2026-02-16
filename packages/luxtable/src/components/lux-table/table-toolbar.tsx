@@ -95,33 +95,33 @@ export function TableToolbar<TData>({
     return (
         <div
             className={cn(
-                "flex flex-wrap items-center gap-2 p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50",
+                "flex flex-wrap items-center gap-2 p-3 rounded-lg border border-[hsl(var(--lux-toolbar-border))] bg-[hsl(var(--lux-toolbar-background))]",
                 className
             )}
         >
             {/* Global Search */}
             {showGlobalSearch && (
                 <div className="relative flex-1 min-w-[200px] max-w-sm">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--lux-toolbar-icon))]" />
                     <input
                         type="text"
                         placeholder="Search in all columns..."
                         value={globalFilter}
                         onChange={(e) => handleGlobalSearch(e.target.value)}
                         className={cn(
-                            "w-full h-9 pl-9 pr-3 rounded-md border border-slate-200 dark:border-slate-700",
-                            "bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-slate-100",
-                            "placeholder:text-slate-400 dark:placeholder:text-slate-500",
-                            "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500",
+                            "w-full h-9 pl-9 pr-3 rounded-md border border-[hsl(var(--lux-toolbar-input-border))]",
+                            "bg-[hsl(var(--lux-toolbar-input-background))] text-sm text-[hsl(var(--lux-toolbar-input-foreground))]",
+                            "placeholder:text-[hsl(var(--lux-toolbar-input-placeholder))]",
+                            "focus:outline-none focus:ring-2 focus:ring-[hsl(var(--lux-focus-ring))]/50 focus:border-[hsl(var(--lux-focus-ring))]",
                             "transition-colors"
                         )}
                     />
                     {globalFilter && (
                         <button
                             onClick={() => handleGlobalSearch("")}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-[hsl(var(--lux-table-row-hover))] transition-colors"
                         >
-                            <FilterX className="h-3 w-3 text-slate-400" />
+                            <FilterX className="h-3 w-3 text-[hsl(var(--lux-toolbar-icon))]" />
                         </button>
                     )}
                 </div>
@@ -134,7 +134,7 @@ export function TableToolbar<TData>({
                         variant={filteringEnabled ? "default" : "outline"}
                         size="sm"
                         onClick={() => onFilteringToggle(!filteringEnabled)}
-                        className="gap-2"
+                        className="gap-2 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
                     >
                         {filteringEnabled ? (
                             <>
@@ -154,18 +154,18 @@ export function TableToolbar<TData>({
                 {showColumnVisibility && (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" className="gap-2">
+                            <Button variant="outline" size="sm" className="gap-2 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800">
                                 <Columns3 className="h-4 w-4" />
                                 <span className="hidden sm:inline">Columns</span>
                                 {hiddenColumns.length > 0 && (
-                                    <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-[10px] font-medium text-white">
+                                    <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-[hsl(var(--lux-focus-ring))] text-[10px] font-medium text-white">
                                         {hiddenColumns.length}
                                     </span>
                                 )}
                                 <ChevronDown className="h-3 w-3 opacity-50" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56">
+                        <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
                             <DropdownMenuLabel className="flex items-center gap-2">
                                 <Columns3 className="h-4 w-4" />
                                 Toggle Columns
@@ -215,9 +215,9 @@ export function TableToolbar<TData>({
                                         >
                                             <span className="flex items-center gap-2">
                                                 {column.getIsVisible() ? (
-                                                    <Eye className="h-3.5 w-3.5 text-green-500" />
+                                                    <Eye className="h-3.5 w-3.5 text-[hsl(var(--lux-status-active-bg))]" />
                                                 ) : (
-                                                    <EyeOff className="h-3.5 w-3.5 text-slate-400" />
+                                                    <EyeOff className="h-3.5 w-3.5 text-[hsl(var(--lux-toolbar-icon))]" />
                                                 )}
                                                 {headerText}
                                             </span>
@@ -229,7 +229,7 @@ export function TableToolbar<TData>({
                             {hiddenColumns.length > 0 && (
                                 <>
                                     <DropdownMenuSeparator />
-                                    <div className="px-2 py-1.5 text-xs text-slate-500 dark:text-slate-400">
+                                    <div className="px-2 py-1.5 text-xs text-[hsl(var(--lux-table-cell-muted))]">
                                         {hiddenColumns.length} column(s) hidden
                                     </div>
                                 </>

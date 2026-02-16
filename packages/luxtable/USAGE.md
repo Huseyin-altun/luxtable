@@ -105,75 +105,134 @@ export default {
 
 ### 2. Add CSS Variables
 
-Add the following to your `src/index.css`:
+LuxTable uses a comprehensive CSS variable system that works seamlessly in both light and dark modes. Import the variables file in your `src/index.css`:
 
 ```css
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Import LuxTable CSS Variables */
+@import 'luxtable/src/styles/variables.css';
+```
+
+Or if you're using a monorepo structure:
+
+```css
+@import '../../packages/luxtable/src/styles/variables.css';
+```
+
+#### Customizing Colors
+
+All LuxTable colors use CSS variables with HSL format, making them easy to override. Simply override the variables in your CSS:
+
+```css
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
+    /* Override table colors */
+    --lux-table-background: 0 0% 100%;
+    --lux-table-foreground: 222 47% 11%;
+    --lux-table-border: 214 32% 91%;
+    
+    /* Override status colors */
+    --lux-status-active-bg: 142 76% 36%;
+    --lux-status-active-text: 0 0% 100%;
+    
+    /* Override primary accent */
+    --lux-focus-ring: 221 83% 53%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
+    /* Override dark mode colors */
+    --lux-table-background: 222 47% 11%;
+    --lux-table-foreground: 210 40% 98%;
+    --lux-table-border: 217 33% 18%;
   }
 }
 ```
+
+#### Available CSS Variables
+
+LuxTable provides variables for all components:
+
+- **Table**: `--lux-table-*` (background, foreground, border, etc.)
+- **Toolbar**: `--lux-toolbar-*` (background, border, input colors, etc.)
+- **Pagination**: `--lux-pagination-*` (background, active, hover, etc.)
+- **Status**: `--lux-status-*` (active, inactive, pending, completed, cancelled)
+- **Selection**: `--lux-selection-*` (background, foreground, border)
+- **Progress**: `--lux-progress-*` (background, bar, text)
+- **Boolean**: `--lux-boolean-*` (true, false colors)
+- **Filter**: `--lux-filter-*` (background, border, foreground)
+- **Focus**: `--lux-focus-ring` (focus ring color)
+
+All variables automatically adapt to light/dark mode when you use the `.dark` class.
 
 ---
 
 ## 📝 Basic Usage
 
-### Simple Table Example
+### Zero-Config: Auto-Generated Columns (Recommended)
+
+LuxTable can automatically generate columns from your data - no column definitions needed! Cell types are also auto-detected based on field names.
+
+```tsx
+// src/App.tsx
+import { LuxTable } from 'luxtable';
+
+// Define your data type
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: 'active' | 'inactive' | 'pending';
+  joinDate: string;
+  salary: number;
+}
+
+// Sample data
+const data: User[] = [
+  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'active', joinDate: '2024-01-15', salary: 75000 },
+  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User', status: 'active', joinDate: '2024-02-20', salary: 65000 },
+  { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'Editor', status: 'inactive', joinDate: '2023-11-10', salary: 55000 },
+];
+
+function App() {
+  return (
+    <div className="container mx-auto p-8">
+      <h1 className="text-3xl font-bold mb-6">User Management</h1>
+      <LuxTable
+        data={data}
+        options={{
+          sorting: true,
+          multiSort: true,  // Shift+Click to sort by multiple columns
+          filtering: true,
+          pagination: true,
+          pageSize: 10,
+          selection: "multiple",
+          showToolbar: true,
+          showGlobalSearch: true,
+          showColumnVisibility: true,
+        }}
+      />
+    </div>
+  );
+}
+
+export default App;
+```
+
+**What happens automatically:**
+- ✅ Columns are auto-generated from data keys
+- ✅ Headers are auto-formatted (camelCase → Title Case)
+- ✅ `status` → StatusCell (colored badges)
+- ✅ `joinDate` → DateCell (formatted dates)
+- ✅ `salary` → CurrencyCell (formatted currency)
+- ✅ `id`, `email` → CopyableCell (click to copy)
+
+### Manual Column Definitions
+
+You can also define columns manually for full control:
 
 ```tsx
 // src/App.tsx
@@ -185,14 +244,14 @@ interface User {
   name: string;
   email: string;
   role: string;
-  status: 'Active' | 'Inactive';
+  status: 'active' | 'inactive';
 }
 
 // Sample data
 const data: User[] = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User', status: 'Active' },
-  { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'Editor', status: 'Inactive' },
+  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'active' },
+  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User', status: 'active' },
+  { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'Editor', status: 'inactive' },
 ];
 
 // Create column helper
@@ -225,8 +284,10 @@ function App() {
       <LuxTable
         data={data}
         columns={columns}
-        enableSorting
-        enablePagination
+        options={{
+          sorting: true,
+          pagination: true,
+        }}
       />
     </div>
   );
@@ -239,17 +300,12 @@ export default App;
 
 ## ✨ Advanced Features
 
-### With Cell Renderers
+### Auto Cell Detection
+
+LuxTable automatically detects and renders cell types based on field names. No configuration needed!
 
 ```tsx
-import { 
-  LuxTable, 
-  createColumnHelper,
-  StatusCell,
-  DateCell,
-  CopyableCell,
-  ProgressCell 
-} from 'luxtable';
+import { LuxTable } from 'luxtable';
 
 interface Task {
   id: number;
@@ -258,6 +314,8 @@ interface Task {
   dueDate: string;
   progress: number;
   taskId: string;
+  isActive: boolean;
+  price: number;
 }
 
 const data: Task[] = [
@@ -267,7 +325,74 @@ const data: Task[] = [
     status: 'in-progress',
     dueDate: '2024-01-15',
     progress: 65,
-    taskId: 'TASK-001'
+    taskId: 'TASK-001',
+    isActive: true,
+    price: 99.99
+  },
+  // ...more data
+];
+
+function App() {
+  return (
+    <LuxTable
+      data={data}
+      options={{
+        sorting: true,
+        pagination: true,
+        filtering: true,
+        showToolbar: true,
+        showGlobalSearch: true,
+      }}
+    />
+  );
+}
+```
+
+**Auto-detected fields:**
+- `status` → StatusCell (colored badge)
+- `dueDate` → DateCell (formatted date)
+- `taskId`, `id` → CopyableCell (click to copy)
+- `isActive` → BooleanCell (Yes/No)
+- `price` → CurrencyCell (formatted currency)
+- `progress` → Can be configured as ProgressCell
+
+### Manual Cell Renderers
+
+You can also use cell renderers manually in column definitions:
+
+```tsx
+import { 
+  LuxTable, 
+  createColumnHelper,
+  StatusCell,
+  DateCell,
+  CopyableCell,
+  ProgressCell,
+  CurrencyCell,
+  BooleanCell
+} from 'luxtable';
+
+interface Task {
+  id: number;
+  title: string;
+  status: 'pending' | 'in-progress' | 'completed';
+  dueDate: string;
+  progress: number;
+  taskId: string;
+  isActive: boolean;
+  price: number;
+}
+
+const data: Task[] = [
+  { 
+    id: 1, 
+    title: 'Complete documentation', 
+    status: 'in-progress',
+    dueDate: '2024-01-15',
+    progress: 65,
+    taskId: 'TASK-001',
+    isActive: true,
+    price: 99.99
   },
   // ...more data
 ];
@@ -277,7 +402,7 @@ const columnHelper = createColumnHelper<Task>();
 const columns = [
   columnHelper.accessor('taskId', {
     header: 'Task ID',
-    cell: (info) => <CopyableCell value={info.getValue()} />,
+    cell: (info) => <CopyableCell value={String(info.getValue())} />,
   }),
   columnHelper.accessor('title', {
     header: 'Title',
@@ -286,27 +411,30 @@ const columns = [
     header: 'Status',
     cell: (info) => (
       <StatusCell 
-        value={info.getValue()} 
-        colorMap={{
-          'pending': '#f59e0b',
-          'in-progress': '#3b82f6',
-          'completed': '#10b981',
-        }}
-        labelMap={{
-          'pending': 'Pending',
-          'in-progress': 'In Progress',
-          'completed': 'Completed',
+        value={String(info.getValue())}
+        colors={{
+          'pending': { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+          'in-progress': { bg: 'bg-blue-100', text: 'text-blue-800' },
+          'completed': { bg: 'bg-green-100', text: 'text-green-800' },
         }}
       />
     ),
   }),
   columnHelper.accessor('dueDate', {
     header: 'Due Date',
-    cell: (info) => <DateCell value={info.getValue()} format="long" />,
+    cell: (info) => <DateCell value={info.getValue() as string} format="long" />,
   }),
   columnHelper.accessor('progress', {
     header: 'Progress',
-    cell: (info) => <ProgressCell value={info.getValue()} />,
+    cell: (info) => <ProgressCell value={Number(info.getValue())} showLabel />,
+  }),
+  columnHelper.accessor('price', {
+    header: 'Price',
+    cell: (info) => <CurrencyCell value={Number(info.getValue())} currency="USD" />,
+  }),
+  columnHelper.accessor('isActive', {
+    header: 'Active',
+    cell: (info) => <BooleanCell value={Boolean(info.getValue())} />,
   }),
 ];
 
@@ -315,33 +443,66 @@ function App() {
     <LuxTable
       data={data}
       columns={columns}
-      enableSorting
-      enablePagination
-      enableColumnFilters
-      showToolbar
-      showGlobalSearch
+      options={{
+        sorting: true,
+        pagination: true,
+        filtering: true,
+        showToolbar: true,
+        showGlobalSearch: true,
+      }}
     />
   );
 }
+```
+
+### Custom Cell Configuration
+
+You can customize auto-detection behavior:
+
+```tsx
+<LuxTable
+  data={data}
+  cellConfig={{
+    // Custom field configurations
+    fields: {
+      customStatus: { type: "status" },
+      customDate: { type: "date", format: "long" },
+      progress: { type: "progress", showLabel: true },
+    },
+    // Custom auto-detection patterns
+    patterns: {
+      status: ["status", "state", "customStatus"],
+      date: ["date", "createdAt", "customDate"],
+      currency: ["price", "amount", "cost"],
+    },
+    // Default status colors
+    defaultStatusColors: {
+      active: { bg: "bg-green-100", text: "text-green-800" },
+      pending: { bg: "bg-yellow-100", text: "text-yellow-800" },
+    },
+    // Disable auto-detection if needed
+    autoDetect: true, // default: true
+  }}
+/>
 ```
 
 ### With Row Selection
 
 ```tsx
 import { useState } from 'react';
-import { LuxTable, createColumnHelper, RowSelectionState } from 'luxtable';
+import { LuxTable, RowSelectionState } from 'luxtable';
 
 function App() {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
-  const handleSelectionChange = (selection: RowSelectionState) => {
-    setRowSelection(selection);
-    console.log('Selected rows:', Object.keys(selection));
+  const handleSelectedRowsChange = (selectedRows: typeof data) => {
+    console.log('Selected rows:', selectedRows);
+    // Do something with selected rows
   };
 
   const handleBulkDelete = () => {
-    const selectedIds = Object.keys(rowSelection).map(index => data[parseInt(index)].id);
-    console.log('Deleting:', selectedIds);
+    const selectedRows = data.filter((_, index) => rowSelection[index]);
+    console.log('Deleting:', selectedRows);
   };
 
   return (
@@ -357,10 +518,12 @@ function App() {
       
       <LuxTable
         data={data}
-        columns={columns}
-        enableRowSelection
+        options={{
+          selection: "multiple", // or "single" or "none"
+        }}
         rowSelection={rowSelection}
-        onRowSelectionChange={handleSelectionChange}
+        onRowSelectionChange={setRowSelection}
+        onSelectedRowsChange={handleSelectedRowsChange}
       />
     </div>
   );
@@ -408,23 +571,25 @@ const columns = [
 <LuxTable
   data={data}
   columns={columns}
-  // Toolbar options
-  showToolbar              // Show the toolbar
-  showGlobalSearch         // Enable global search input
-  showColumnVisibility     // Enable column visibility toggle
-  showFilterToggle         // Enable filter toggle button
-  
-  // Filtering & Sorting
-  enableSorting            // Enable column sorting
-  enableColumnFilters      // Enable column-level filters
-  
-  // Pagination
-  enablePagination         // Enable pagination
-  pageSize={10}            // Default page size
-  pageSizeOptions={[10, 20, 50, 100]}
-  
-  // Row Selection
-  enableRowSelection       // Enable row selection with checkboxes
+  options={{
+    // Toolbar options
+    showToolbar: true,              // Show the toolbar
+    showGlobalSearch: true,          // Enable global search input
+    showColumnVisibility: true,      // Enable column visibility toggle
+    
+    // Filtering & Sorting
+    sorting: true,                   // Enable column sorting
+    multiSort: true,                 // Enable multi-column sorting (Shift+Click)
+    filtering: true,                 // Enable column-level filters
+    
+    // Pagination
+    pagination: true,                // Enable pagination
+    pageSize: 10,                    // Default page size
+    
+    // Row Selection
+    selection: "multiple",           // "single" | "multiple" | "none"
+    showSelectionCheckbox: true,     // Show selection checkbox
+  }}
 />
 ```
 
@@ -433,41 +598,41 @@ const columns = [
 ## 🔧 Full Configuration Options
 
 ```tsx
-interface LuxTableProps<T> {
+interface LuxTableProps<TData> {
   // Required
-  data: T[];
-  columns: ColumnDef<T>[];
+  data: TData[];
   
-  // Sorting
-  enableSorting?: boolean;
-  defaultSort?: SortingState;
+  // Optional
+  columns?: ColumnDef<TData, any>[];  // Auto-generated if not provided
+  className?: string;
+  
+  // Options
+  options?: {
+    pagination?: boolean;              // Default: false
+    pageSize?: number;                 // Default: 10
+    sorting?: boolean;                 // Default: true
+    multiSort?: boolean;               // Default: true
+    maxMultiSortColCount?: number;     // Default: undefined (unlimited)
+    filtering?: boolean;               // Default: false
+    selection?: "single" | "multiple" | "none";  // Default: "none"
+    showSelectionCheckbox?: boolean;   // Default: true (when selection enabled)
+    showToolbar?: boolean;             // Default: false
+    showGlobalSearch?: boolean;        // Default: true
+    showColumnVisibility?: boolean;    // Default: true
+  };
+  
+  // Cell Configuration
+  cellConfig?: GlobalCellConfig;      // Custom cell auto-detection config
+  
+  // Controlled State
+  sorting?: SortingState;
   onSortingChange?: (sorting: SortingState) => void;
-  
-  // Pagination
-  enablePagination?: boolean;
-  pageSize?: number;
-  pageSizeOptions?: number[];
-  
-  // Filtering
-  enableColumnFilters?: boolean;
-  enableGlobalFilter?: boolean;
-  
-  // Row Selection
-  enableRowSelection?: boolean;
   rowSelection?: RowSelectionState;
   onRowSelectionChange?: (selection: RowSelectionState) => void;
+  onSelectedRowsChange?: (rows: TData[]) => void;
   
-  // Toolbar
-  showToolbar?: boolean;
-  showGlobalSearch?: boolean;
-  showColumnVisibility?: boolean;
-  showFilterToggle?: boolean;
-  
-  // Styling
-  className?: string;
-  headerClassName?: string;
-  rowClassName?: string | ((row: Row<T>) => string);
-  cellClassName?: string;
+  // Utilities
+  getRowId?: (row: TData, index: number) => string;  // Default: uses "id" field or index
 }
 ```
 
@@ -477,10 +642,22 @@ interface LuxTableProps<T> {
 
 | Renderer | Description | Props |
 |----------|-------------|-------|
-| `StatusCell` | Displays status badges with colors | `value`, `colorMap`, `labelMap` |
-| `DateCell` | Formats date values | `value`, `format`, `locale` |
-| `CopyableCell` | Copyable text with icon | `value` |
-| `ProgressCell` | Progress bar visualization | `value`, `showLabel`, `color` |
+| `StatusCell` | Displays status badges with colors | `value`, `colors`, `className` |
+| `DateCell` | Formats date values | `value`, `format` ("short" \| "long" \| "relative"), `locale` |
+| `CopyableCell` | Copyable text with icon | `value`, `tooltip`, `alwaysShowIcon`, `onCopy`, `className` |
+| `ProgressCell` | Progress bar visualization | `value`, `showLabel`, `barColor`, `className` |
+| `CurrencyCell` | Formatted currency values | `value`, `currency`, `locale` |
+| `BooleanCell` | Yes/No indicators | `value`, `trueLabel`, `falseLabel`, `trueColor`, `falseColor` |
+
+### Auto-Detection Patterns
+
+Cell renderers are automatically applied based on field names:
+
+- **Status**: `status`, `state`, `stage`, `phase`
+- **Date**: `date`, `createdAt`, `updatedAt`, `joinDate`, `startDate`, `endDate`, `birthDate`, `publishedAt`
+- **Currency**: `price`, `amount`, `salary`, `cost`, `revenue`, `total`, `balance`, `fee`
+- **Boolean**: `isActive`, `isVerified`, `isEnabled`, `isDeleted`, `isPublished`, `isPublic`
+- **Copyable**: `id`, `email`, `phone`, `code`, `token`, `reference`, `orderId`
 
 ---
 
@@ -560,7 +737,22 @@ import { LuxTable } from "@/components/lux-table/lux-table";
 import { createColumnHelper } from "@/lib/column-helper";
 import { StatusCell } from "@/components/lux-table/cell-renderers/status-cell";
 
-// Define columns and use as normal
+// Option 1: Zero-config (auto-generated columns)
+function App() {
+  return (
+    <LuxTable
+      data={data}
+      options={{
+        pagination: true,
+        sorting: true,
+        filtering: true,
+        showToolbar: true,
+      }}
+    />
+  );
+}
+
+// Option 2: Manual column definitions
 const columnHelper = createColumnHelper<User>();
 
 const columns = [
@@ -599,7 +791,7 @@ function App() {
 
 For more detailed examples and full API documentation, visit:
 - **Documentation**: [https://luxtable.dev](https://luxtable.dev)
-- **GitHub**: [https://github.com/luxtable/luxtable](https://github.com/luxtable/luxtable)
+- **GitHub**: [https://github.com/Huseyin-altun/luxtable](https://github.com/Huseyin-altun/luxtable)
 - **npm**: [https://www.npmjs.com/package/luxtable](https://www.npmjs.com/package/luxtable)
 
 ---

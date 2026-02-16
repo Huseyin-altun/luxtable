@@ -82,7 +82,7 @@ export function DateCell({ value, format = "short", locale = "en-US" }: DateCell
 
     // Invalid date check
     if (isNaN(date.getTime())) {
-        return <span className="text-gray-400">-</span>;
+        return <span className="text-[hsl(var(--lux-table-cell-muted))]">-</span>;
     }
 
     let formatted: string;
@@ -110,5 +110,5 @@ export function DateCell({ value, format = "short", locale = "en-US" }: DateCell
             formatted = date.toLocaleDateString(locale);
     }
 
-    return <span>{formatted}</span>;
+    return <span className="text-[hsl(var(--lux-table-cell-foreground))]">{formatted}</span>;
 }

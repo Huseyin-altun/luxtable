@@ -85,5 +85,5 @@ export function CurrencyCell({ value, currency = "TRY", locale = "tr-TR" }: Curr
         currency,
     }).format(value);
 
-    return <span className="font-medium">{formatted}</span>;
+    return <span className="font-medium text-[hsl(var(--lux-table-cell-foreground))]">{formatted}</span>;
 }

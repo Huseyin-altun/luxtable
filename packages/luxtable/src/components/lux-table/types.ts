@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef, SortingState, RowSelectionState } from "@tanstack/react-table";
+import type { GlobalCellConfig } from "../../lib/cell-config";
 
 // ============================================================================
 // LuxTable Types
@@ -17,6 +18,10 @@ export interface LuxTableOptions {
     pageSize?: number;
     /** Sorting feature (default: true) */
     sorting?: boolean;
+    /** Multi-column sorting - hold Shift and click to sort by multiple columns (default: true) */
+    multiSort?: boolean;
+    /** Maximum number of columns that can be sorted at once (default: unlimited) */
+    maxMultiSortColCount?: number;
     /** Column filtering feature (default: false) */
     filtering?: boolean;
     /** Row selection mode - "single": single select, "multiple": multi-select, "none": disabled */
@@ -34,14 +39,16 @@ export interface LuxTableOptions {
 }
 
 export interface LuxTableProps<TData> {
-    /** Column definitions */
-    columns: ColumnDef<TData, any>[];
+    /** Column definitions - if not provided, columns will be auto-generated from data */
+    columns?: ColumnDef<TData, any>[];
     /** Table data */
     data: TData[];
     /** Additional CSS classes */
     className?: string;
     /** Table options */
     options?: LuxTableOptions;
+    /** Global cell config - field bazlı otomatik cell renderer'ları tanımlar */
+    cellConfig?: GlobalCellConfig;
     /** Controlled sorting state */
     sorting?: SortingState;
     /** Called when sorting changes */

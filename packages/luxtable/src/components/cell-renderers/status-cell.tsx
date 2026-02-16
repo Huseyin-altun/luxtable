@@ -22,37 +22,58 @@
  * - darkBg: Dark theme background color
  * - darkText: Dark theme text color
  */
+// Helper function to create status color entries for both cases
+const createStatusColor = (bg: string, text: string, darkBg: string, darkText: string) => ({
+    bg,
+    text,
+    darkBg,
+    darkText,
+});
+
+// Base status colors using CSS variables
+const statusColorMap = {
+    active: createStatusColor(
+        "bg-[hsl(var(--lux-status-active-bg))]",
+        "text-[hsl(var(--lux-status-active-text))]",
+        "",
+        ""
+    ),
+    inactive: createStatusColor(
+        "bg-[hsl(var(--lux-status-inactive-bg))]",
+        "text-[hsl(var(--lux-status-inactive-text))]",
+        "",
+        ""
+    ),
+    pending: createStatusColor(
+        "bg-[hsl(var(--lux-status-pending-bg))]",
+        "text-[hsl(var(--lux-status-pending-text))]",
+        "",
+        ""
+    ),
+    completed: createStatusColor(
+        "bg-[hsl(var(--lux-status-completed-bg))]",
+        "text-[hsl(var(--lux-status-completed-text))]",
+        "",
+        ""
+    ),
+    cancelled: createStatusColor(
+        "bg-[hsl(var(--lux-status-cancelled-bg))]",
+        "text-[hsl(var(--lux-status-cancelled-text))]",
+        "",
+        ""
+    ),
+};
+
+// Create defaultStatusColors with both lowercase and capitalized versions
 export const defaultStatusColors: Record<string, { bg: string; text: string; darkBg: string; darkText: string }> = {
-    Active: {
-        bg: "bg-green-100",
-        text: "text-green-800",
-        darkBg: "dark:bg-green-900",
-        darkText: "dark:text-green-300",
-    },
-    Inactive: {
-        bg: "bg-red-100",
-        text: "text-red-800",
-        darkBg: "dark:bg-red-900",
-        darkText: "dark:text-red-300",
-    },
-    Pending: {
-        bg: "bg-yellow-100",
-        text: "text-yellow-800",
-        darkBg: "dark:bg-yellow-900",
-        darkText: "dark:text-yellow-300",
-    },
-    Completed: {
-        bg: "bg-blue-100",
-        text: "text-blue-800",
-        darkBg: "dark:bg-blue-900",
-        darkText: "dark:text-blue-300",
-    },
-    Cancelled: {
-        bg: "bg-gray-100",
-        text: "text-gray-800",
-        darkBg: "dark:bg-gray-900",
-        darkText: "dark:text-gray-300",
-    },
+    // Lowercase versions
+    ...statusColorMap,
+    // Capitalized versions
+    Active: statusColorMap.active,
+    Inactive: statusColorMap.inactive,
+    Pending: statusColorMap.pending,
+    Completed: statusColorMap.completed,
+    Cancelled: statusColorMap.cancelled,
 };
 
 export interface StatusCellProps {
@@ -62,10 +83,13 @@ export interface StatusCellProps {
      * Custom color definitions
      * Used to override default colors or add new colors
      * 
+     * Note: CSS variables automatically handle dark mode, so darkBg and darkText are optional.
+     * You can use CSS variables like: bg-[hsl(var(--lux-status-active-bg))] or custom colors.
+     * 
      * @example
      * ```tsx
      * colors={{
-     *   Custom: { bg: "bg-purple-100", text: "text-purple-800" }
+     *   Custom: { bg: "bg-[hsl(var(--lux-status-active-bg))]", text: "text-[hsl(var(--lux-status-active-text))]" }
      * }}
      * ```
      */
@@ -119,21 +143,30 @@ export interface StatusCellProps {
  */
 export function StatusCell({ value, colors, className }: StatusCellProps) {
     const mergedColors = { ...defaultStatusColors, ...colors };
-    const colorConfig = mergedColors[value];
+
+    // Normalize value to lowercase for lookup
+    const normalizedValue = value.toLowerCase();
+    const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+
+    // Try to find color config - check normalized, original, and capitalized versions
+    const colorConfig = mergedColors[normalizedValue] || mergedColors[value] || mergedColors[capitalizedValue];
+
+    // Use capitalized value for display
+    const displayValue = capitalizedValue;
 
     if (!colorConfig) {
         return (
-            <span className={`px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 ${className || ""}`}>
-                {value}
+            <span className={`px-2 py-1 rounded-full text-xs font-medium bg-[hsl(var(--lux-status-default-bg))] text-[hsl(var(--lux-status-default-text))] ${className || ""}`}>
+                {displayValue}
             </span>
         );
     }
 
-    const { bg, text, darkBg, darkText } = colorConfig;
+    const { bg, text } = colorConfig;
 
     return (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${bg} ${text} ${darkBg || ""} ${darkText || ""} ${className || ""}`}>
-            {value}
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${bg} ${text} ${className || ""}`}>
+            {displayValue}
         </span>
     );
 }

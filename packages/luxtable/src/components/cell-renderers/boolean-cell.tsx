@@ -27,12 +27,12 @@ export interface BooleanCellProps {
     falseLabel?: string;
     /** 
      * True değeri için renk sınıfları 
-     * @default "text-green-600 dark:text-green-400"
+     * @default Uses CSS variable: text-[hsl(var(--lux-boolean-true))]
      */
     trueColor?: string;
     /** 
      * False değeri için renk sınıfları 
-     * @default "text-red-600 dark:text-red-400"
+     * @default Uses CSS variable: text-[hsl(var(--lux-boolean-false))]
      */
     falseColor?: string;
 }
@@ -93,8 +93,8 @@ export function BooleanCell({
     value,
     trueLabel = "Yes",
     falseLabel = "No",
-    trueColor = "text-green-600 dark:text-green-400",
-    falseColor = "text-red-600 dark:text-red-400",
+    trueColor = "text-[hsl(var(--lux-boolean-true))]",
+    falseColor = "text-[hsl(var(--lux-boolean-false))]",
 }: BooleanCellProps) {
     return (
         <span className={`font-medium ${value ? trueColor : falseColor}`}>

@@ -1,6 +1,6 @@
 {
   "name": "luxtable",
-  "version": "0.3.4",
+  "version": "0.3.6",
   "private": false,
   "description": "Enterprise-Grade Data Management. Minimalist Aesthetics.",
   "keywords": [
@@ -18,7 +18,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/luxtable/luxtable.git"
+    "url": "https://github.com/Huseyin-altun/luxtable.git"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -34,6 +34,7 @@
   "files": [
     "dist",
     "registry",
+    "src/styles",
     "README.md",
     "USAGE.md",
     "EXAMPLE.md"

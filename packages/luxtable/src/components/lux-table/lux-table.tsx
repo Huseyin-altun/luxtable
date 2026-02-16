@@ -28,8 +28,11 @@ import {
 import { ColumnFilter } from "./column-filter";
 import { TablePagination } from "./pagination";
 import { TableToolbar } from "./table-toolbar";
+import { SortableHeader } from "./sortable-header";
 import { Checkbox } from "../ui/checkbox";
 import type { LuxTableProps } from "./types";
+import { renderCell, defaultGlobalCellConfig, getFieldConfig } from "../../lib/cell-config";
+import { createColumnsFromData } from "../../lib/column-helper";
 
 // ============================================================================
 // Selection Checkbox Column Helper
@@ -106,6 +109,7 @@ export function LuxTable<TData>({
     data,
     className,
     options,
+    cellConfig,
     sorting: controlledSorting,
     onSortingChange,
     rowSelection: controlledRowSelection,
@@ -141,13 +145,85 @@ export function LuxTable<TData>({
     const enableRowSelection = selectionMode !== "none";
     const enableMultiRowSelection = selectionMode === "multiple";
 
-    // Build columns with selection column if needed
-    const tableColumns = React.useMemo<ColumnDef<TData, unknown>[]>(() => {
-        if (showCheckbox && enableRowSelection) {
-            return [createSelectionColumn<TData>(), ...columns] as ColumnDef<TData, unknown>[];
+    // Merge cellConfig with defaults - always use default config, merge with user's config if provided
+    const mergedCellConfig = React.useMemo(() => {
+        // Always start with default config
+        const baseConfig = defaultGlobalCellConfig;
+
+        // If user provided cellConfig, merge it
+        if (cellConfig) {
+            return {
+                ...baseConfig,
+                ...cellConfig,
+                fields: {
+                    ...cellConfig.fields, // User's fields override defaults
+                },
+                patterns: {
+                    ...baseConfig.patterns,
+                    ...cellConfig.patterns, // Merge patterns
+                },
+                defaultStatusColors: {
+                    ...baseConfig.defaultStatusColors,
+                    ...cellConfig.defaultStatusColors, // Merge status colors
+                },
+            };
         }
-        return columns as ColumnDef<TData, unknown>[];
-    }, [columns, showCheckbox, enableRowSelection]);
+
+        // If no user config, use default config
+        return baseConfig;
+    }, [cellConfig]);
+
+    // Auto-generate columns from data if not provided
+    const autoColumns = React.useMemo<ColumnDef<TData, unknown>[]>(() => {
+        if (columns) return columns;
+        if (!data || data.length === 0) return [];
+
+        // Generate columns from data - TData must extend Record<string, unknown>
+        if (typeof data[0] === 'object' && data[0] !== null) {
+            const generatedColumns = createColumnsFromData(data as TData[] & Record<string, unknown>[]);
+            return generatedColumns as ColumnDef<TData, unknown>[];
+        }
+        return [];
+    }, [columns, data]);
+
+    // Build columns with selection column if needed and apply cellConfig
+    const tableColumns = React.useMemo<ColumnDef<TData, unknown>[]>(() => {
+        let processedColumns = autoColumns.map((col) => {
+            // Check if column has accessorKey (for accessor columns)
+            const accessorKey = 'accessorKey' in col ? col.accessorKey : undefined;
+            // Fallback to id if accessorKey is not available
+            const fieldName = accessorKey ? String(accessorKey) : ('id' in col ? String(col.id) : undefined);
+
+            // If we have cellConfig and fieldName, try to get field config (with auto-detection)
+            if (mergedCellConfig && fieldName) {
+                // Get sample value from first row for auto-detection
+                const sampleValue = data && data.length > 0 ? (data[0] as any)?.[fieldName] : undefined;
+
+                // Use getFieldConfig which includes auto-detection
+                const fieldConfig = getFieldConfig(fieldName, sampleValue, mergedCellConfig);
+
+                if (fieldConfig) {
+                    // cellConfig has priority - override existing cell if any
+                    return {
+                        ...col,
+                        cell: (context: any) => renderCell(context, fieldName, mergedCellConfig),
+                    };
+                }
+            }
+
+            // If column already has a cell renderer, use it
+            if (col.cell) {
+                return col;
+            }
+
+            return col;
+        });
+
+        if (showCheckbox && enableRowSelection) {
+            return [createSelectionColumn<TData>(), ...processedColumns] as ColumnDef<TData, unknown>[];
+        }
+        return processedColumns as ColumnDef<TData, unknown>[];
+    }, [autoColumns, showCheckbox, enableRowSelection, mergedCellConfig, data]);
 
     // Handle row selection change
     const handleRowSelectionChange = React.useCallback(
@@ -163,9 +239,20 @@ export function LuxTable<TData>({
         [isControlledRowSelection, onRowSelectionChange, rowSelection]
     );
 
+    // Sorting enabled at table level (default: true)
+    const enableSorting = options?.sorting !== false;
+    // Multi-column sorting enabled (default: true)
+    const enableMultiSort = options?.multiSort !== false;
+
     const table = useReactTable({
         data,
         columns: tableColumns,
+        enableSorting,
+        enableMultiSort,
+        // Shift+Click for multi-sort (default behavior)
+        isMultiSortEvent: (e: unknown) => (e as MouseEvent).shiftKey,
+        // Max columns for multi-sort (undefined = unlimited)
+        maxMultiSortColCount: options?.maxMultiSortColCount,
         state: {
             sorting,
             columnFilters,
@@ -237,12 +324,12 @@ export function LuxTable<TData>({
 
             {/* Selection info bar */}
             {enableRowSelection && Object.keys(rowSelection).length > 0 && (
-                <div className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex items-center gap-2 px-4 py-2 text-sm bg-[hsl(var(--lux-selection-info-background))] text-[hsl(var(--lux-selection-info-foreground))] rounded-lg border border-[hsl(var(--lux-selection-info-border))]">
                     <CheckCircle2 className="w-4 h-4" />
                     <span>
                         <strong>{Object.keys(rowSelection).length}</strong> rows selected
                         {table.getFilteredRowModel().rows.length > 0 && (
-                            <span className="text-blue-500 dark:text-blue-400">
+                            <span className="opacity-80">
                                 {" / "}{table.getFilteredRowModel().rows.length} total
                             </span>
                         )}
@@ -250,14 +337,14 @@ export function LuxTable<TData>({
                     <button
                         type="button"
                         onClick={() => handleRowSelectionChange({})}
-                        className="ml-auto text-xs hover:text-blue-900 dark:hover:text-blue-100 underline underline-offset-2"
+                        className="ml-auto text-xs hover:opacity-80 underline underline-offset-2"
                     >
                         Clear selection
                     </button>
                 </div>
             )}
 
-            <div className="rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 overflow-hidden">
+            <div className="rounded-md border border-[hsl(var(--lux-table-border))] bg-[hsl(var(--lux-table-background))] overflow-hidden">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -270,12 +357,19 @@ export function LuxTable<TData>({
                                             key={header.id}
                                             style={isSelectionColumn ? { width: 40, padding: "0 12px" } : undefined}
                                         >
-                                            {header.isPlaceholder
-                                                ? null
-                                                : (flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                ) as React.ReactNode)}
+                                            {header.isPlaceholder ? null : (
+                                                isSelectionColumn ? (
+                                                    flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext()
+                                                    ) as React.ReactNode
+                                                ) : (
+                                                    <SortableHeader
+                                                        header={header}
+                                                        showSortIndex={enableMultiSort && sorting.length > 1}
+                                                    />
+                                                )
+                                            )}
                                         </TableHead>
                                     );
                                 })}
@@ -285,7 +379,7 @@ export function LuxTable<TData>({
 
                         {/* Filter Row */}
                         {filteringVisible && (
-                            <TableRow className="bg-slate-50/50 dark:bg-slate-900/50">
+                            <TableRow className="bg-[hsl(var(--lux-filter-background))]">
                                 {table.getHeaderGroups()[0]?.headers.map((header) => {
                                     const isSelectionColumn = header.id === "__selection__";
                                     return (
@@ -307,7 +401,7 @@ export function LuxTable<TData>({
                                     data-state={row.getIsSelected() && "selected"}
                                     className={cn(
                                         enableRowSelection && "cursor-pointer",
-                                        row.getIsSelected() && "bg-blue-50/50 dark:bg-blue-950/30"
+                                        row.getIsSelected() && "bg-[hsl(var(--lux-selection-background))]"
                                     )}
                                     onClick={
                                         enableRowSelection && !showCheckbox

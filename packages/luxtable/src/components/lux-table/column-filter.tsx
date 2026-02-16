@@ -58,9 +58,9 @@ export function ColumnFilter<TData, TValue>({ column }: ColumnFilterProps<TData,
                 <SelectTrigger
                     className={cn(
                         "h-8 text-xs",
-                        "border-slate-200 dark:border-slate-700",
-                        "bg-white dark:bg-slate-900",
-                        "text-slate-900 dark:text-slate-100"
+                        "border-[hsl(var(--lux-filter-border))]",
+                        "bg-[hsl(var(--lux-filter-background))]",
+                        "text-[hsl(var(--lux-filter-foreground))]"
                     )}
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -87,10 +87,10 @@ export function ColumnFilter<TData, TValue>({ column }: ColumnFilterProps<TData,
             placeholder="Filter..."
             className={cn(
                 "h-8 text-xs",
-                "border-slate-200 dark:border-slate-700",
-                "bg-white dark:bg-slate-900",
-                "text-slate-900 dark:text-slate-100",
-                "placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                "border-[hsl(var(--lux-filter-border))]",
+                "bg-[hsl(var(--lux-filter-background))]",
+                "text-[hsl(var(--lux-filter-foreground))]",
+                "placeholder:text-[hsl(var(--lux-toolbar-input-placeholder))]"
             )}
             onClick={(e) => e.stopPropagation()}
         />
