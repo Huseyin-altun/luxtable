@@ -1,5 +1,4 @@
 /* Import LuxTable CSS Variables - must come before Tailwind layers */
-@import '../../packages/luxtable/src/styles/variables.css';
 
 @tailwind base;
 @tailwind components;

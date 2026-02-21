@@ -21,7 +21,7 @@
  * }
  * ```
  */
-
+ @import '../../packages/luxtable/src/styles/variables.css';
 @layer base {
   :root {
     /* ================================================================

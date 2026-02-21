@@ -68,8 +68,8 @@ export interface LuxTableProps<TData> {
  * Can be used in the meta field in column definitions
  */
 export interface ColumnMeta {
-    /** Filter type: text or select */
-    filterVariant?: "text" | "select";
+    /** Filter type: text, select, date, slider, or status */
+    filterVariant?: "text" | "select" | "date" | "slider" | "status";
 }
 
 /**

@@ -62,7 +62,9 @@
     "@tanstack/react-table": "^8.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "date-fns": "^3.6.0",
     "lucide-react": "^0.562.0",
+    "react-day-picker": "^8.10.1",
     "tailwind-merge": "^2.0.0"
   },
   "devDependencies": {

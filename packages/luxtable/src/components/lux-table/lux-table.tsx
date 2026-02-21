@@ -186,6 +186,52 @@ export function LuxTable<TData>({
         return [];
     }, [columns, data]);
 
+    // Custom filter functions
+    const dateFilterFn = React.useCallback((row: any, columnId: string, filterValue: { from?: string; to?: string }) => {
+        if (!filterValue || (!filterValue.from && !filterValue.to)) return true;
+
+        const cellValue = row.getValue(columnId);
+        if (!cellValue) return false;
+
+        const cellDate = new Date(String(cellValue));
+        if (isNaN(cellDate.getTime())) return false;
+
+        if (filterValue.from) {
+            const fromDate = new Date(filterValue.from);
+            fromDate.setHours(0, 0, 0, 0);
+            if (cellDate < fromDate) return false;
+        }
+
+        if (filterValue.to) {
+            const toDate = new Date(filterValue.to);
+            toDate.setHours(23, 59, 59, 999);
+            if (cellDate > toDate) return false;
+        }
+
+        return true;
+    }, []);
+
+    const sliderFilterFn = React.useCallback((row: any, columnId: string, filterValue: { min?: number; max?: number }) => {
+        if (!filterValue || (filterValue.min === undefined && filterValue.max === undefined)) return true;
+
+        const cellValue = row.getValue(columnId);
+        const numValue = typeof cellValue === 'number' ? cellValue : parseFloat(String(cellValue));
+
+        if (isNaN(numValue)) return false;
+
+        if (filterValue.min !== undefined && numValue < filterValue.min) return false;
+        if (filterValue.max !== undefined && numValue > filterValue.max) return false;
+
+        return true;
+    }, []);
+
+    const statusFilterFn = React.useCallback((row: any, columnId: string, filterValue: string[]) => {
+        if (!filterValue || filterValue.length === 0) return true;
+
+        const cellValue = String(row.getValue(columnId)).toLowerCase();
+        return filterValue.some(status => status.toLowerCase() === cellValue);
+    }, []);
+
     // Build columns with selection column if needed and apply cellConfig
     const tableColumns = React.useMemo<ColumnDef<TData, unknown>[]>(() => {
         let processedColumns = autoColumns.map((col) => {
@@ -193,6 +239,41 @@ export function LuxTable<TData>({
             const accessorKey = 'accessorKey' in col ? col.accessorKey : undefined;
             // Fallback to id if accessorKey is not available
             const fieldName = accessorKey ? String(accessorKey) : ('id' in col ? String(col.id) : undefined);
+
+            // Auto-detect filter type and add filter function
+            let filterFn = col.filterFn;
+            const meta = (col.meta || {}) as { filterVariant?: "text" | "select" | "date" | "slider" | "status" };
+
+            if (fieldName && !meta.filterVariant) {
+                const fieldNameLower = fieldName.toLowerCase();
+                // Auto-detect date columns
+                const datePatterns = ['date', 'createdat', 'updatedat', 'joindate', 'startdate', 'enddate', 'birthdate', 'publishedat'];
+                if (datePatterns.some(pattern => fieldNameLower.includes(pattern))) {
+                    meta.filterVariant = "date";
+                    filterFn = dateFilterFn as any;
+                }
+                // Auto-detect status columns
+                const statusPatterns = ['status', 'state', 'stage', 'phase'];
+                if (statusPatterns.some(pattern => fieldNameLower.includes(pattern))) {
+                    meta.filterVariant = "status";
+                    filterFn = statusFilterFn as any;
+                }
+                // Auto-detect numeric/currency columns
+                const numericPatterns = ['salary', 'price', 'amount', 'cost', 'revenue', 'total', 'balance', 'fee'];
+                if (numericPatterns.some(pattern => fieldNameLower.includes(pattern))) {
+                    meta.filterVariant = "slider";
+                    filterFn = sliderFilterFn as any;
+                }
+            } else if (meta.filterVariant) {
+                // Use explicit filter variant
+                if (meta.filterVariant === "date" && !filterFn) {
+                    filterFn = dateFilterFn as any;
+                } else if (meta.filterVariant === "slider" && !filterFn) {
+                    filterFn = sliderFilterFn as any;
+                } else if (meta.filterVariant === "status" && !filterFn) {
+                    filterFn = statusFilterFn as any;
+                }
+            }
 
             // If we have cellConfig and fieldName, try to get field config (with auto-detection)
             if (mergedCellConfig && fieldName) {
@@ -207,23 +288,33 @@ export function LuxTable<TData>({
                     return {
                         ...col,
                         cell: (context: any) => renderCell(context, fieldName, mergedCellConfig),
+                        filterFn,
+                        meta,
                     };
                 }
             }
 
             // If column already has a cell renderer, use it
-            if (col.cell) {
-                return col;
+            if (col.cell || filterFn || meta.filterVariant) {
+                return {
+                    ...col,
+                    filterFn,
+                    meta,
+                };
             }
 
-            return col;
+            return {
+                ...col,
+                filterFn,
+                meta,
+            };
         });
 
         if (showCheckbox && enableRowSelection) {
             return [createSelectionColumn<TData>(), ...processedColumns] as ColumnDef<TData, unknown>[];
         }
         return processedColumns as ColumnDef<TData, unknown>[];
-    }, [autoColumns, showCheckbox, enableRowSelection, mergedCellConfig, data]);
+    }, [autoColumns, showCheckbox, enableRowSelection, mergedCellConfig, data, dateFilterFn, sliderFilterFn, statusFilterFn]);
 
     // Handle row selection change
     const handleRowSelectionChange = React.useCallback(
@@ -385,7 +476,7 @@ export function LuxTable<TData>({
                                     return (
                                         <TableHead key={`filter-${header.id}`} className="py-2">
                                             {!isSelectionColumn && header.column.getCanFilter() ? (
-                                                <ColumnFilter column={header.column} />
+                                                <ColumnFilter column={header.column} data={data} />
                                             ) : null}
                                         </TableHead>
                                     );
