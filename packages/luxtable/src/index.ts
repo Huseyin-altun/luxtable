@@ -29,6 +29,7 @@ export {
     getCoreRowModel, 
     getPaginationRowModel, 
     getSortedRowModel, 
-    getFilteredRowModel 
+    getFilteredRowModel,
+    getExpandedRowModel,
 } from "@tanstack/react-table";
-export type { SortingState, ColumnDef, RowSelectionState } from "@tanstack/react-table";
+export type { SortingState, ColumnDef, RowSelectionState, Row, ExpandedState } from "@tanstack/react-table";

@@ -40,6 +40,55 @@ const data: User[] = [
   { id: 10, name: 'Hannah Black', email: 'hannah@example.com', role: 'Developer', status: 'pending', joinDate: '2024-03-15', salary: 62000 },
 ];
 
+// Tree + Expandable row demo: recursive subRows
+interface TreeNode {
+  id: string;
+  name: string;
+  role: string;
+  status: string;
+  subRows?: TreeNode[];
+}
+
+const treeData: TreeNode[] = [
+  {
+    id: 't1',
+    name: 'Engineering',
+    role: 'Department',
+    status: 'active',
+    subRows: [
+      {
+        id: 't1-1',
+        name: 'Frontend Team',
+        role: 'Team',
+        status: 'active',
+        subRows: [
+          { id: 't1-1-1', name: 'Alice', role: 'Developer', status: 'active', subRows: undefined },
+          { id: 't1-1-2', name: 'Bob', role: 'Developer', status: 'active', subRows: undefined },
+        ],
+      },
+      {
+        id: 't1-2',
+        name: 'Backend Team',
+        role: 'Team',
+        status: 'active',
+        subRows: [
+          { id: 't1-2-1', name: 'Charlie', role: 'Developer', status: 'active', subRows: undefined },
+        ],
+      },
+    ],
+  },
+  {
+    id: 't2',
+    name: 'Product',
+    role: 'Department',
+    status: 'active',
+    subRows: [
+      { id: 't2-1', name: 'Design', role: 'Team', status: 'active', subRows: undefined },
+      { id: 't2-2', name: 'PM', role: 'Team', status: 'active', subRows: undefined },
+    ],
+  },
+];
+
 function App() {
   const [isDark, toggleTheme] = useTheme();
 
@@ -67,7 +116,7 @@ function App() {
           </button>
         </div>
 
-        <div className="bg-card backdrop-blur-sm rounded-xl border border-border overflow-hidden shadow-2xl">
+        <div className="bg-card backdrop-blur-sm rounded-xl border border-border overflow-hidden shadow-2xl mb-8">
           <LuxTable
             data={data}
             options={{
@@ -80,6 +129,28 @@ function App() {
               showToolbar: true,
               showGlobalSearch: true,
               showColumnVisibility: true,
+            }}
+          />
+        </div>
+
+        <h2 className="text-2xl font-semibold mb-4">Tree + Expandable Row (Hiyerarşi + Detay)</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Sol chevron ile dalları aç/kapa; Detay sütunundaki ok ile satır altında özel bileşen açılır.
+        </p>
+        <div className="bg-card backdrop-blur-sm rounded-xl border border-border overflow-hidden shadow-2xl">
+          <LuxTable<TreeNode>
+            data={treeData}
+            getSubRows={(row) => row.subRows}
+            renderSubComponent={(row) => (
+              <div className="p-4 bg-muted/30 border-t border-border text-sm">
+                <p className="font-medium">{row.original.name}</p>
+                <p className="text-muted-foreground">Role: {row.original.role} · Status: {row.original.status}</p>
+                <p className="text-muted-foreground mt-2">ID: {row.original.id}</p>
+              </div>
+            )}
+            options={{
+              pagination: false,
+              filtering: true,
             }}
           />
         </div>

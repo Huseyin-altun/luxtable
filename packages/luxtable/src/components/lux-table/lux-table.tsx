@@ -9,13 +9,15 @@ import {
     getSortedRowModel,
     getFilteredRowModel,
     getFacetedUniqueValues,
+    getExpandedRowModel,
     SortingState,
     ColumnFiltersState,
     RowSelectionState,
     ColumnDef,
     Row,
+    ExpandedState,
 } from "@tanstack/react-table";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "../../lib/utils";
 import {
     Table,
@@ -63,6 +65,78 @@ function createSelectionColumn<TData>(): ColumnDef<TData, unknown> {
             />
         ),
         size: 40,
+        enableSorting: false,
+        enableHiding: false,
+    };
+}
+
+/**
+ * Creates column definition for tree expand/collapse (chevron)
+ */
+function createTreeExpanderColumn<TData>(): ColumnDef<TData, unknown> {
+    return {
+        id: "__tree_expander__",
+        header: () => null,
+        cell: ({ row }) => {
+            if (!row.getCanExpand()) {
+                return <span className="inline-block w-6" aria-hidden />;
+            }
+            return (
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        row.toggleExpanded();
+                    }}
+                    className="inline-flex items-center justify-center w-6 h-6 rounded hover:bg-[hsl(var(--lux-table-row-hover))] text-[hsl(var(--lux-table-cell-foreground))]"
+                    aria-label={row.getIsExpanded() ? "Collapse row" : "Expand row"}
+                >
+                    {row.getIsExpanded() ? (
+                        <ChevronDown className="w-4 h-4" />
+                    ) : (
+                        <ChevronRight className="w-4 h-4" />
+                    )}
+                </button>
+            );
+        },
+        size: 40,
+        enableSorting: false,
+        enableHiding: false,
+    };
+}
+
+/**
+ * Creates column definition for expandable row detail (Expand button)
+ */
+function createDetailExpanderColumn<TData>(props: {
+    expandedDetail: Record<string, boolean>;
+    onToggle: (rowId: string) => void;
+}): ColumnDef<TData, unknown> {
+    return {
+        id: "__detail_expander__",
+        header: () => <span className="text-xs font-medium text-[hsl(var(--lux-table-cell-muted))]">Detay</span>,
+        cell: ({ row }) => {
+            const isExpanded = Boolean(props.expandedDetail[row.id]);
+            return (
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        props.onToggle(row.id);
+                    }}
+                    className={cn(
+                        "inline-flex items-center justify-center w-8 h-8 rounded text-[hsl(var(--lux-table-cell-muted))]",
+                        "hover:bg-[hsl(var(--lux-table-row-hover))] hover:text-[hsl(var(--lux-table-cell-foreground))]",
+                        "transition-transform",
+                        isExpanded && "rotate-180"
+                    )}
+                    aria-label={isExpanded ? "Close detail" : "Expand detail"}
+                >
+                    <ChevronDown className="w-4 h-4" />
+                </button>
+            );
+        },
+        size: 48,
         enableSorting: false,
         enableHiding: false,
     };
@@ -116,6 +190,8 @@ export function LuxTable<TData>({
     onRowSelectionChange,
     onSelectedRowsChange,
     getRowId,
+    getSubRows,
+    renderSubComponent,
 }: LuxTableProps<TData>) {
     // Internal sorting state (used when not controlled)
     const [internalSorting, setInternalSorting] = React.useState<SortingState>([]);
@@ -131,6 +207,18 @@ export function LuxTable<TData>({
 
     // Row selection state
     const [internalRowSelection, setInternalRowSelection] = React.useState<RowSelectionState>({});
+
+    // Tree expansion state (for hierarchical subRows)
+    const [expanded, setExpanded] = React.useState<ExpandedState>({});
+    // Detail expansion state (for renderSubComponent per row)
+    const [expandedDetail, setExpandedDetail] = React.useState<Record<string, boolean>>({});
+
+    const enableTree = Boolean(getSubRows);
+    const enableExpandableRows = Boolean(renderSubComponent);
+
+    const toggleDetailExpanded = React.useCallback((rowId: string) => {
+        setExpandedDetail((prev) => ({ ...prev, [rowId]: !prev[rowId] }));
+    }, []);
 
     // Determine if we're in controlled mode
     const isControlledSorting = controlledSorting !== undefined;
@@ -310,11 +398,13 @@ export function LuxTable<TData>({
             };
         });
 
-        if (showCheckbox && enableRowSelection) {
-            return [createSelectionColumn<TData>(), ...processedColumns] as ColumnDef<TData, unknown>[];
-        }
+        const prefix: ColumnDef<TData, unknown>[] = [];
+        if (enableTree) prefix.push(createTreeExpanderColumn<TData>());
+        if (enableExpandableRows) prefix.push(createDetailExpanderColumn<TData>({ expandedDetail, onToggle: toggleDetailExpanded }));
+        if (showCheckbox && enableRowSelection) prefix.push(createSelectionColumn<TData>());
+        if (prefix.length) return [...prefix, ...processedColumns] as ColumnDef<TData, unknown>[];
         return processedColumns as ColumnDef<TData, unknown>[];
-    }, [autoColumns, showCheckbox, enableRowSelection, mergedCellConfig, data, dateFilterFn, sliderFilterFn, statusFilterFn]);
+    }, [autoColumns, showCheckbox, enableRowSelection, enableTree, enableExpandableRows, expandedDetail, toggleDetailExpanded, mergedCellConfig, data, dateFilterFn, sliderFilterFn, statusFilterFn]);
 
     // Handle row selection change
     const handleRowSelectionChange = React.useCallback(
@@ -349,7 +439,13 @@ export function LuxTable<TData>({
             columnFilters,
             rowSelection,
             globalFilter,
+            ...(enableTree && { expanded }),
         },
+        ...(enableTree && {
+            getSubRows,
+            onExpandedChange: setExpanded,
+            getExpandedRowModel: getExpandedRowModel(),
+        }),
         onGlobalFilterChange: setGlobalFilter,
         onSortingChange: (updater) => {
             const newSorting = typeof updater === "function" ? updater(sorting) : updater;
@@ -442,11 +538,17 @@ export function LuxTable<TData>({
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     const isSelectionColumn = header.id === "__selection__";
+                                    const isTreeExpander = header.id === "__tree_expander__";
+                                    const isDetailExpander = header.id === "__detail_expander__";
 
                                     return (
                                         <TableHead
                                             key={header.id}
-                                            style={isSelectionColumn ? { width: 40, padding: "0 12px" } : undefined}
+                                            style={
+                                                isSelectionColumn ? { width: 40, padding: "0 12px" }
+                                                    : isTreeExpander ? { width: 40 }
+                                                        : isDetailExpander ? { width: 48 } : undefined
+                                            }
                                         >
                                             {header.isPlaceholder ? null : (
                                                 isSelectionColumn ? (
@@ -471,11 +573,11 @@ export function LuxTable<TData>({
                         {/* Filter Row */}
                         {filteringVisible && (
                             <TableRow className="bg-[hsl(var(--lux-filter-background))]">
-                                {table.getHeaderGroups()[0]?.headers.map((header) => {
-                                    const isSelectionColumn = header.id === "__selection__";
+                                        {table.getHeaderGroups()[0]?.headers.map((header) => {
+                                    const isSpecial = header.id === "__selection__" || header.id === "__tree_expander__" || header.id === "__detail_expander__";
                                     return (
                                         <TableHead key={`filter-${header.id}`} className="py-2">
-                                            {!isSelectionColumn && header.column.getCanFilter() ? (
+                                            {!isSpecial && header.column.getCanFilter() ? (
                                                 <ColumnFilter column={header.column} data={data} />
                                             ) : null}
                                         </TableHead>
@@ -487,38 +589,58 @@ export function LuxTable<TData>({
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                    className={cn(
-                                        enableRowSelection && "cursor-pointer",
-                                        row.getIsSelected() && "bg-[hsl(var(--lux-selection-background))]"
-                                    )}
-                                    onClick={
-                                        enableRowSelection && !showCheckbox
-                                            ? () => {
-                                                if (selectionMode === "single") {
-                                                    handleRowSelectionChange({ [row.id]: true });
-                                                } else {
-                                                    row.toggleSelected();
+                                <React.Fragment key={row.id}>
+                                    <TableRow
+                                        data-state={row.getIsSelected() && "selected"}
+                                        className={cn(
+                                            enableRowSelection && "cursor-pointer",
+                                            row.getIsSelected() && "bg-[hsl(var(--lux-selection-background))]"
+                                        )}
+                                        onClick={
+                                            enableRowSelection && !showCheckbox
+                                                ? () => {
+                                                    if (selectionMode === "single") {
+                                                        handleRowSelectionChange({ [row.id]: true });
+                                                    } else {
+                                                        row.toggleSelected();
+                                                    }
                                                 }
-                                            }
-                                            : undefined
-                                    }
-                                >
-                                    {row.getVisibleCells().map((cell) => {
-                                        const isSelectionColumn = cell.column.id === "__selection__";
-                                        return (
+                                                : undefined
+                                        }
+                                    >
+                                        {row.getVisibleCells().map((cell) => {
+                                            const isSelectionColumn = cell.column.id === "__selection__";
+                                            const isTreeExpander = cell.column.id === "__tree_expander__";
+                                            const isDetailExpander = cell.column.id === "__detail_expander__";
+                                            const depth = "depth" in row ? (row as Row<TData> & { depth?: number }).depth ?? 0 : 0;
+                                            const indentPx = isTreeExpander && enableTree ? depth * 20 : 0;
+                                            const style: React.CSSProperties | undefined = isSelectionColumn
+                                                ? { width: 40, padding: "0 12px" }
+                                                : isTreeExpander && indentPx
+                                                    ? { width: 40, paddingLeft: 8 + indentPx }
+                                                    : isDetailExpander ? { width: 48 } : undefined;
+                                            return (
+                                                <TableCell
+                                                    key={cell.id}
+                                                    style={style}
+                                                    onClick={isSelectionColumn || isTreeExpander || isDetailExpander ? (e) => e.stopPropagation() : undefined}
+                                                >
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext()) as React.ReactNode}
+                                                </TableCell>
+                                            );
+                                        })}
+                                    </TableRow>
+                                    {enableExpandableRows && renderSubComponent && expandedDetail[row.id] && (
+                                        <TableRow className="bg-[hsl(var(--lux-table-row-hover))]/50">
                                             <TableCell
-                                                key={cell.id}
-                                                style={isSelectionColumn ? { width: 40, padding: "0 12px" } : undefined}
-                                                onClick={isSelectionColumn ? (e) => e.stopPropagation() : undefined}
+                                                colSpan={visibleColumnCount}
+                                                className="p-0 align-top"
                                             >
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext()) as React.ReactNode}
+                                                {renderSubComponent(row)}
                                             </TableCell>
-                                        );
-                                    })}
-                                </TableRow>
+                                        </TableRow>
+                                    )}
+                                </React.Fragment>
                             ))
                         ) : (
                             <TableRow>

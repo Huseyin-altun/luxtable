@@ -1,6 +1,7 @@
 "use client";
 
-import { ColumnDef, SortingState, RowSelectionState } from "@tanstack/react-table";
+import type { ReactNode } from "react";
+import { ColumnDef, SortingState, RowSelectionState, Row } from "@tanstack/react-table";
 import type { GlobalCellConfig } from "../../lib/cell-config";
 
 // ============================================================================
@@ -28,7 +29,12 @@ export interface LuxTableOptions {
     selection?: "single" | "multiple" | "none";
     /** Show selection checkbox (default: true if selection !== "none") */
     showSelectionCheckbox?: boolean;
-    
+
+    /** Enable tree/hierarchical structure (uses getSubRows; default: false) */
+    enableTree?: boolean;
+    /** Enable expandable row detail (uses renderSubComponent; default: false) */
+    enableExpandableRows?: boolean;
+
     // Toolbar Options
     /** Show toolbar with search and controls (default: false) */
     showToolbar?: boolean;
@@ -61,6 +67,11 @@ export interface LuxTableProps<TData> {
     onSelectedRowsChange?: (rows: TData[]) => void;
     /** Unique ID field for each row (default: "id") */
     getRowId?: (row: TData, index: number) => string;
+
+    /** Tree: returns child rows for hierarchical data (e.g. (row) => row.subRows) */
+    getSubRows?: (row: TData) => TData[] | undefined;
+    /** Expandable row: custom component rendered below the row when expanded */
+    renderSubComponent?: (row: Row<TData>) => ReactNode;
 }
 
 /**
