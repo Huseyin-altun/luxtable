@@ -1,5 +1,12 @@
 /* Import LuxTable CSS Variables - must come before Tailwind layers */
+@import "../../../packages/luxtable/src/styles/variables.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}

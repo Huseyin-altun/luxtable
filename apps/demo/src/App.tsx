@@ -1,5 +1,19 @@
+import { useState, useEffect } from 'react';
 import { LuxTable } from 'luxtable';
 import './App.css';
+
+// Tema sınıfını html üzerinde senkronize et (light/dark)
+function useTheme() {
+  const [isDark, setIsDark] = useState(() =>
+    typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+  );
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDark) root.classList.add('dark');
+    else root.classList.remove('dark');
+  }, [isDark]);
+  return [isDark, () => setIsDark((d) => !d)] as const;
+}
 
 // Sample data type
 interface User {
@@ -27,22 +41,33 @@ const data: User[] = [
 ];
 
 function App() {
+  const [isDark, toggleTheme] = useTheme();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-8">
+    <div className="min-h-screen bg-background text-foreground p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">
-            🚀 LuxTable Demo
-          </h1>
-          <p className="text-gray-400">
-            Enterprise-Grade Data Management. Minimalist Aesthetics.
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
-            ✨ Otomatik column oluşturma + Default Cell Config (field isimlerine göre otomatik algılama - hiç config gerekmez!)
-          </p>
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-bold text-foreground mb-2">
+              🚀 LuxTable Demo
+            </h1>
+            <p className="text-muted-foreground">
+              Enterprise-Grade Data Management. Minimalist Aesthetics.
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              ✨ Otomatik column oluşturma + Default Cell Config (field isimlerine göre otomatik algılama - hiç config gerekmez!)
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="px-4 py-2 rounded-lg border border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-colors text-sm font-medium"
+          >
+            {isDark ? '☀️ Light tema' : '🌙 Dark tema'}
+          </button>
         </div>
 
-        <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 overflow-hidden shadow-2xl">
+        <div className="bg-card backdrop-blur-sm rounded-xl border border-border overflow-hidden shadow-2xl">
           <LuxTable
             data={data}
             options={{
