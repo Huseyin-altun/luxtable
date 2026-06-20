@@ -1,0 +1,28 @@
+import { LuxTable } from 'luxtable'
+
+# LuxTable
+
+`LuxTable` bileşeni, verilerinizi tablo formatında göstermek için kullanılan temel bileşendir.
+
+## Kullanım
+
+```tsx
+import { LuxTable } from 'luxtable'
+
+function Demo() {
+  const data = [
+    { id: 1, name: 'John Doe', age: 28 },
+    { id: 2, name: 'Jane Doe', age: 25 },
+  ]
+
+  const columns = [
+    { header: 'ID', accessorKey: 'id' },
+    { header: 'Name', accessorKey: 'name' },
+    { header: 'Age', accessorKey: 'age' },
+  ]
+
+  return <LuxTable data={data} columns={columns} />
+}
+```
+
+*Not: Next.js MDX içinde bileşen render etmek için ek yapılandırmalar gerekebilir.*
