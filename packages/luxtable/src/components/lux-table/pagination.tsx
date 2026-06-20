@@ -10,9 +10,9 @@ import {
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
-// ============================================================================
-// Pagination Button
-// ============================================================================
+
+
+
 
 interface PaginationButtonProps {
     onClick: () => void;
@@ -43,9 +43,9 @@ function PaginationButton({ onClick, disabled, title, children }: PaginationButt
     );
 }
 
-// ============================================================================
-// Page Number Button
-// ============================================================================
+
+
+
 
 interface PageNumberButtonProps {
     pageNum: number;
@@ -71,46 +71,43 @@ function PageNumberButton({ pageNum, isActive, onClick }: PageNumberButtonProps)
     );
 }
 
-// ============================================================================
-// Pagination Component
-// ============================================================================
+
+
+
 
 interface TablePaginationProps<TData> {
     table: Table<TData>;
 }
 
-/**
- * Table pagination component
- * Provides page navigation, record info and page size selection
- */
+
 export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
     const currentPage = table.getState().pagination.pageIndex;
     const totalPages = table.getPageCount();
     const pageSize = table.getState().pagination.pageSize;
     const totalRows = table.getFilteredRowModel().rows.length;
 
-    // Calculate visible range
+    
     const startRow = currentPage * pageSize + 1;
     const endRow = Math.min((currentPage + 1) * pageSize, totalRows);
 
-    // Generate page numbers to display
+    
     const getPageNumbers = (): (number | string)[] => {
         const pages: (number | string)[] = [];
 
         if (totalPages <= 7) {
-            // Show all pages if 7 or less
+            
             for (let i = 0; i < totalPages; i++) {
                 pages.push(i);
             }
         } else {
-            // Always show first page
+            
             pages.push(0);
 
             if (currentPage > 3) {
                 pages.push("...");
             }
 
-            // Show pages around current
+            
             for (let i = Math.max(1, currentPage - 1); i <= Math.min(totalPages - 2, currentPage + 1); i++) {
                 pages.push(i);
             }
@@ -119,7 +116,7 @@ export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
                 pages.push("...");
             }
 
-            // Always show last page
+            
             pages.push(totalPages - 1);
         }
 
@@ -128,9 +125,9 @@ export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
 
     return (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2 py-3">
-            {/* Left side: Records info + Page size selector */}
+            {}
             <div className="flex items-center gap-4">
-                {/* Records info */}
+                {}
                 <div className="text-sm text-[hsl(var(--lux-table-cell-muted))]">
                     <span className="font-medium text-[hsl(var(--lux-table-foreground))]">
                         {startRow}
@@ -146,7 +143,7 @@ export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
                     records shown
                 </div>
 
-                {/* Page size selector */}
+                {}
                 <div className="flex items-center gap-2">
                     <span className="text-sm text-[hsl(var(--lux-table-cell-muted))]">Rows per page:</span>
                     <select
@@ -171,9 +168,9 @@ export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
                 </div>
             </div>
 
-            {/* Right side: Navigation */}
+            {}
             <div className="flex items-center gap-2">
-                {/* First page */}
+                {}
                 <PaginationButton
                     onClick={() => table.setPageIndex(0)}
                     disabled={!table.getCanPreviousPage()}
@@ -182,7 +179,7 @@ export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
                     <ChevronsLeft className="h-4 w-4" />
                 </PaginationButton>
 
-                {/* Previous page */}
+                {}
                 <PaginationButton
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
@@ -191,7 +188,7 @@ export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
                     <ChevronLeft className="h-4 w-4" />
                 </PaginationButton>
 
-                {/* Page numbers */}
+                {}
                 <div className="flex items-center gap-1">
                     {getPageNumbers().map((page, idx) => {
                         if (page === "...") {
@@ -214,7 +211,7 @@ export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
                     })}
                 </div>
 
-                {/* Next page */}
+                {}
                 <PaginationButton
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
@@ -223,7 +220,7 @@ export function TablePagination<TData>({ table }: TablePaginationProps<TData>) {
                     <ChevronRight className="h-4 w-4" />
                 </PaginationButton>
 
-                {/* Last page */}
+                {}
                 <PaginationButton
                     onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                     disabled={!table.getCanNextPage()}

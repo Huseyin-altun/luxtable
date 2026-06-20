@@ -23,7 +23,7 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
             const newValues = [...localValue];
             newValues[index] = Math.max(min, Math.min(max, newValue));
             
-            // Ensure min <= max for range sliders
+            
             if (newValues.length === 2) {
                 if (index === 0 && newValues[0] > newValues[1]) {
                     newValues[0] = newValues[1];
@@ -41,7 +41,7 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
         return (
             <div className={cn("relative flex w-full items-center", className)}>
                 {localValue.length === 2 ? (
-                    // Range slider
+                    
                     <div className="relative w-full">
                         <input
                             ref={ref}
@@ -75,7 +75,7 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
                         />
                     </div>
                 ) : (
-                    // Single value slider
+                    
                     <div className="relative w-full">
                         <input
                             ref={ref as React.RefObject<HTMLInputElement>}

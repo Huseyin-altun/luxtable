@@ -1,6 +1,6 @@
-// ============================================================================
-// LuxTable - Ana Tablo Bileşeni Export'ları
-// ============================================================================
+
+
+
 
 export { LuxTable } from "./lux-table";
 export type { LuxTableProps, LuxTableOptions, ColumnMeta, PaginationInfo } from "./types";

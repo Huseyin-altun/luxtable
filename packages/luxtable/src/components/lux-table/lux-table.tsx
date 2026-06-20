@@ -36,13 +36,11 @@ import type { LuxTableProps } from "./types";
 import { renderCell, defaultGlobalCellConfig, getFieldConfig } from "../../lib/cell-config";
 import { createColumnsFromData } from "../../lib/column-helper";
 
-// ============================================================================
-// Selection Checkbox Column Helper
-// ============================================================================
 
-/**
- * Creates column definition for selection checkbox
- */
+
+
+
+
 function createSelectionColumn<TData>(): ColumnDef<TData, unknown> {
     return {
         id: "__selection__",
@@ -70,9 +68,7 @@ function createSelectionColumn<TData>(): ColumnDef<TData, unknown> {
     };
 }
 
-/**
- * Creates column definition for tree expand/collapse (chevron)
- */
+
 function createTreeExpanderColumn<TData>(): ColumnDef<TData, unknown> {
     return {
         id: "__tree_expander__",
@@ -105,9 +101,7 @@ function createTreeExpanderColumn<TData>(): ColumnDef<TData, unknown> {
     };
 }
 
-/**
- * Creates column definition for expandable row detail (Expand button)
- */
+
 function createDetailExpanderColumn<TData>(props: {
     expandedDetail: Record<string, boolean>;
     onToggle: (rowId: string) => void;
@@ -142,42 +136,11 @@ function createDetailExpanderColumn<TData>(props: {
     };
 }
 
-// ============================================================================
-// LuxTable Component
-// ============================================================================
 
-/**
- * LuxTable - Advanced React table component
- * 
- * Modern table built on top of TanStack Table, comes with ready-to-use features.
- * 
- * @example
- * ```tsx
- * // Simple usage
- * <LuxTable
- *   columns={columns}
- *   data={data}
- *   options={{
- *     pagination: true,
- *     pageSize: 20,
- *     filtering: true,
- *     sorting: true
- *   }}
- * />
- * 
- * // With row selection
- * <LuxTable
- *   columns={columns}
- *   data={data}
- *   options={{
- *     selection: "multiple", // or "single"
- *   }}
- *   onSelectedRowsChange={(selectedRows) => {
- *     console.log("Selected rows:", selectedRows);
- *   }}
- * />
- * ```
- */
+
+
+
+
 export function LuxTable<TData>({
     columns,
     data,
@@ -193,13 +156,13 @@ export function LuxTable<TData>({
     getSubRows,
     renderSubComponent,
 }: LuxTableProps<TData>) {
-    // Internal sorting state (used when not controlled)
+    
     const [internalSorting, setInternalSorting] = React.useState<SortingState>([]);
 
-    // Column filters state
+    
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
-    // Global filter state
+    
     const [globalFilter, setGlobalFilter] = React.useState("");
 
     // Column filtering visibility (controlled by toolbar)
@@ -233,40 +196,40 @@ export function LuxTable<TData>({
     const enableRowSelection = selectionMode !== "none";
     const enableMultiRowSelection = selectionMode === "multiple";
 
-    // Merge cellConfig with defaults - always use default config, merge with user's config if provided
+    
     const mergedCellConfig = React.useMemo(() => {
-        // Always start with default config
+        
         const baseConfig = defaultGlobalCellConfig;
 
-        // If user provided cellConfig, merge it
+        
         if (cellConfig) {
             return {
                 ...baseConfig,
                 ...cellConfig,
                 fields: {
-                    ...cellConfig.fields, // User's fields override defaults
+                    ...cellConfig.fields, 
                 },
                 patterns: {
                     ...baseConfig.patterns,
-                    ...cellConfig.patterns, // Merge patterns
+                    ...cellConfig.patterns, 
                 },
                 defaultStatusColors: {
                     ...baseConfig.defaultStatusColors,
-                    ...cellConfig.defaultStatusColors, // Merge status colors
+                    ...cellConfig.defaultStatusColors, 
                 },
             };
         }
 
-        // If no user config, use default config
+        
         return baseConfig;
     }, [cellConfig]);
 
-    // Auto-generate columns from data if not provided
+    
     const autoColumns = React.useMemo<ColumnDef<TData, unknown>[]>(() => {
         if (columns) return columns;
         if (!data || data.length === 0) return [];
 
-        // Generate columns from data - TData must extend Record<string, unknown>
+        
         if (typeof data[0] === 'object' && data[0] !== null) {
             const generatedColumns = createColumnsFromData(data as TData[] & Record<string, unknown>[]);
             return generatedColumns as ColumnDef<TData, unknown>[];
@@ -274,7 +237,7 @@ export function LuxTable<TData>({
         return [];
     }, [columns, data]);
 
-    // Custom filter functions
+    
     const dateFilterFn = React.useCallback((row: any, columnId: string, filterValue: { from?: string; to?: string }) => {
         if (!filterValue || (!filterValue.from && !filterValue.to)) return true;
 
@@ -320,40 +283,40 @@ export function LuxTable<TData>({
         return filterValue.some(status => status.toLowerCase() === cellValue);
     }, []);
 
-    // Build columns with selection column if needed and apply cellConfig
+    
     const tableColumns = React.useMemo<ColumnDef<TData, unknown>[]>(() => {
         let processedColumns = autoColumns.map((col) => {
-            // Check if column has accessorKey (for accessor columns)
+            
             const accessorKey = 'accessorKey' in col ? col.accessorKey : undefined;
-            // Fallback to id if accessorKey is not available
+            
             const fieldName = accessorKey ? String(accessorKey) : ('id' in col ? String(col.id) : undefined);
 
-            // Auto-detect filter type and add filter function
+            
             let filterFn = col.filterFn;
             const meta = (col.meta || {}) as { filterVariant?: "text" | "select" | "date" | "slider" | "status" };
 
             if (fieldName && !meta.filterVariant) {
                 const fieldNameLower = fieldName.toLowerCase();
-                // Auto-detect date columns
+                
                 const datePatterns = ['date', 'createdat', 'updatedat', 'joindate', 'startdate', 'enddate', 'birthdate', 'publishedat'];
                 if (datePatterns.some(pattern => fieldNameLower.includes(pattern))) {
                     meta.filterVariant = "date";
                     filterFn = dateFilterFn as any;
                 }
-                // Auto-detect status columns
+                
                 const statusPatterns = ['status', 'state', 'stage', 'phase'];
                 if (statusPatterns.some(pattern => fieldNameLower.includes(pattern))) {
                     meta.filterVariant = "status";
                     filterFn = statusFilterFn as any;
                 }
-                // Auto-detect numeric/currency columns
+                
                 const numericPatterns = ['salary', 'price', 'amount', 'cost', 'revenue', 'total', 'balance', 'fee'];
                 if (numericPatterns.some(pattern => fieldNameLower.includes(pattern))) {
                     meta.filterVariant = "slider";
                     filterFn = sliderFilterFn as any;
                 }
             } else if (meta.filterVariant) {
-                // Use explicit filter variant
+                
                 if (meta.filterVariant === "date" && !filterFn) {
                     filterFn = dateFilterFn as any;
                 } else if (meta.filterVariant === "slider" && !filterFn) {
@@ -363,16 +326,16 @@ export function LuxTable<TData>({
                 }
             }
 
-            // If we have cellConfig and fieldName, try to get field config (with auto-detection)
+            
             if (mergedCellConfig && fieldName) {
-                // Get sample value from first row for auto-detection
+                
                 const sampleValue = data && data.length > 0 ? (data[0] as any)?.[fieldName] : undefined;
 
-                // Use getFieldConfig which includes auto-detection
+                
                 const fieldConfig = getFieldConfig(fieldName, sampleValue, mergedCellConfig);
 
                 if (fieldConfig) {
-                    // cellConfig has priority - override existing cell if any
+                    
                     return {
                         ...col,
                         cell: (context: any) => renderCell(context, fieldName, mergedCellConfig),
@@ -382,7 +345,7 @@ export function LuxTable<TData>({
                 }
             }
 
-            // If column already has a cell renderer, use it
+            
             if (col.cell || filterFn || meta.filterVariant) {
                 return {
                     ...col,
@@ -406,7 +369,7 @@ export function LuxTable<TData>({
         return processedColumns as ColumnDef<TData, unknown>[];
     }, [autoColumns, showCheckbox, enableRowSelection, enableTree, enableExpandableRows, expandedDetail, toggleDetailExpanded, mergedCellConfig, data, dateFilterFn, sliderFilterFn, statusFilterFn]);
 
-    // Handle row selection change
+    
     const handleRowSelectionChange = React.useCallback(
         (updater: RowSelectionState | ((old: RowSelectionState) => RowSelectionState)) => {
             const newSelection = typeof updater === "function" ? updater(rowSelection) : updater;
@@ -420,9 +383,9 @@ export function LuxTable<TData>({
         [isControlledRowSelection, onRowSelectionChange, rowSelection]
     );
 
-    // Sorting enabled at table level (default: true)
+    
     const enableSorting = options?.sorting !== false;
-    // Multi-column sorting enabled (default: true)
+    
     const enableMultiSort = options?.multiSort !== false;
 
     const table = useReactTable({
@@ -430,9 +393,9 @@ export function LuxTable<TData>({
         columns: tableColumns,
         enableSorting,
         enableMultiSort,
-        // Shift+Click for multi-sort (default behavior)
+        
         isMultiSortEvent: (e: unknown) => (e as MouseEvent).shiftKey,
-        // Max columns for multi-sort (undefined = unlimited)
+        
         maxMultiSortColCount: options?.maxMultiSortColCount,
         state: {
             sorting,
@@ -461,7 +424,7 @@ export function LuxTable<TData>({
         enableRowSelection,
         enableMultiRowSelection,
         getRowId: getRowId ?? ((row: TData, index: number) => {
-            // Try to use "id" field if exists, otherwise use index
+            
             if (typeof row === "object" && row !== null && "id" in row) {
                 return String((row as { id: unknown }).id);
             }
@@ -479,7 +442,7 @@ export function LuxTable<TData>({
         },
     });
 
-    // Call onSelectedRowsChange when selection changes
+    
     React.useEffect(() => {
         if (onSelectedRowsChange) {
             const selectedRows = table.getSelectedRowModel().rows.map((row: Row<TData>) => row.original);
@@ -487,17 +450,17 @@ export function LuxTable<TData>({
         }
     }, [rowSelection, onSelectedRowsChange, table]);
 
-    // Calculate visible column count (for empty state colspan)
+    
     const visibleColumnCount = tableColumns.length;
 
-    // Toolbar visibility
+    
     const showToolbar = options?.showToolbar ?? false;
     const showGlobalSearch = options?.showGlobalSearch ?? true;
     const showColumnVisibility = options?.showColumnVisibility ?? true;
 
     return (
         <div className={cn("w-full space-y-4", className)}>
-            {/* Toolbar */}
+            {}
             {showToolbar && (
                 <TableToolbar
                     table={table}
@@ -509,7 +472,7 @@ export function LuxTable<TData>({
                 />
             )}
 
-            {/* Selection info bar */}
+            {}
             {enableRowSelection && Object.keys(rowSelection).length > 0 && (
                 <div className="flex items-center gap-2 px-4 py-2 text-sm bg-[hsl(var(--lux-selection-info-background))] text-[hsl(var(--lux-selection-info-foreground))] rounded-lg border border-[hsl(var(--lux-selection-info-border))]">
                     <CheckCircle2 className="w-4 h-4" />
@@ -570,7 +533,7 @@ export function LuxTable<TData>({
                             </TableRow>
                         ))}
 
-                        {/* Filter Row */}
+                        {}
                         {filteringVisible && (
                             <TableRow className="bg-[hsl(var(--lux-filter-background))]">
                                         {table.getHeaderGroups()[0]?.headers.map((header) => {
@@ -653,7 +616,7 @@ export function LuxTable<TData>({
                 </Table>
             </div>
 
-            {/* Pagination Controls */}
+            {}
             {options?.pagination && <TablePagination table={table} />}
         </div>
     );

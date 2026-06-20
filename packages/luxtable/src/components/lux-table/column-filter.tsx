@@ -19,29 +19,27 @@ import { StatusCell } from "../cell-renderers/status-cell";
 import { cn } from "../../lib/utils";
 import { format } from "date-fns";
 
-// ============================================================================
-// Column Filter Component
-// ============================================================================
+
+
+
 
 interface ColumnFilterProps<TData, TValue> {
     column: Column<TData, TValue>;
     data?: TData[];
 }
 
-/**
- * Auto-detect filter type based on column data
- */
+
 function detectFilterType<TData, TValue>(
     column: Column<TData, TValue>,
     data?: TData[]
 ): "text" | "select" | "date" | "slider" | "status" {
-    // Check if filterVariant is explicitly set in meta
+    
     const meta = column.columnDef.meta as { filterVariant?: "text" | "select" | "date" | "slider" | "status" };
     if (meta?.filterVariant) {
         return meta.filterVariant;
     }
 
-    // Auto-detect based on column id/accessorKey
+    
     const columnId = column.id.toLowerCase();
     const accessorKey = 'accessorKey' in column.columnDef ? String(column.columnDef.accessorKey || '').toLowerCase() : '';
 
@@ -51,34 +49,34 @@ function detectFilterType<TData, TValue>(
         return "date";
     }
 
-    // Check for status columns
+    
     const statusPatterns = ['status', 'state', 'stage', 'phase'];
     if (statusPatterns.some(pattern => columnId.includes(pattern) || accessorKey.includes(pattern))) {
         return "status";
     }
 
-    // Check for numeric/currency columns (salary, price, amount, etc.)
+    
     const numericPatterns = ['salary', 'price', 'amount', 'cost', 'revenue', 'total', 'balance', 'fee'];
     if (numericPatterns.some(pattern => columnId.includes(pattern) || accessorKey.includes(pattern))) {
         return "slider";
     }
 
-    // Check actual data type
+    
     if (data && data.length > 0) {
         const firstValue = column.getFacetedUniqueValues().keys().next().value;
         if (firstValue !== undefined) {
-            // Check if it's a date string
+            
             if (typeof firstValue === 'string' && /^\d{4}-\d{2}-\d{2}/.test(firstValue)) {
                 const date = new Date(firstValue);
                 if (!isNaN(date.getTime())) {
                     return "date";
                 }
             }
-            // Check if it's a number
+            
             if (typeof firstValue === 'number') {
                 return "slider";
             }
-            // Check if it's a status-like value
+            
             const statusValues = ['active', 'inactive', 'pending', 'completed', 'cancelled', 'approved', 'rejected'];
             if (typeof firstValue === 'string' && statusValues.includes(firstValue.toLowerCase())) {
                 return "status";
@@ -86,24 +84,16 @@ function detectFilterType<TData, TValue>(
         }
     }
 
-    // Default to text
+    
     return "text";
 }
 
-/**
- * Column filter component
- * Supports multiple filter types: text, select, date, slider, status
- * 
- * @example
- * ```tsx
- * <ColumnFilter column={column} data={data} />
- * ```
- */
+
 export function ColumnFilter<TData, TValue>({ column, data }: ColumnFilterProps<TData, TValue>) {
     const columnFilterValue = column.getFilterValue();
     const filterVariant = detectFilterType(column, data);
 
-    // For select/status filter, get unique values from the column
+    
     const sortedUniqueValues = React.useMemo(() => {
         if (filterVariant !== "select" && filterVariant !== "status") return [];
 
@@ -116,7 +106,7 @@ export function ColumnFilter<TData, TValue>({ column, data }: ColumnFilterProps<
         return Array.from(values).sort();
     }, [column, filterVariant]);
 
-    // Date range filter with Calendar
+    
     if (filterVariant === "date") {
         const dateRange = (columnFilterValue as { from?: string; to?: string }) || {};
         const [fromDate, setFromDate] = React.useState<Date | undefined>(
@@ -239,9 +229,9 @@ export function ColumnFilter<TData, TValue>({ column, data }: ColumnFilterProps<
         );
     }
 
-    // Slider filter for numeric columns
+    
     if (filterVariant === "slider") {
-        // Get min/max from data
+        
         const numericValues = React.useMemo(() => {
             const values: number[] = [];
             column.getFacetedUniqueValues().forEach((_, key) => {
@@ -341,7 +331,7 @@ export function ColumnFilter<TData, TValue>({ column, data }: ColumnFilterProps<
         );
     }
 
-    // Status badge filter (multi-select)
+    
     if (filterVariant === "status") {
         const selectedStatuses = (columnFilterValue as string[]) || [];
         const [open, setOpen] = React.useState(false);
@@ -424,7 +414,7 @@ export function ColumnFilter<TData, TValue>({ column, data }: ColumnFilterProps<
         );
     }
 
-    // Select (dropdown) filter using shadcn/ui Select
+    
     if (filterVariant === "select") {
         return (
             <Select
@@ -454,7 +444,7 @@ export function ColumnFilter<TData, TValue>({ column, data }: ColumnFilterProps<
         );
     }
 
-    // Text input filter using shadcn/ui Input
+    
     return (
         <Input
             type="text"

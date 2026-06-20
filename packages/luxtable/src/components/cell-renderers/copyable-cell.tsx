@@ -3,90 +3,35 @@
 import * as React from "react";
 import { Copy, Check } from "lucide-react";
 
-// ============================================================================
-// COPYABLE CELL - Copyable Cell
-// ============================================================================
-// This component is used for content that can be copied by clicking on it in tables.
-// Ideal for values like Email, ID, codes that users frequently copy.
-//
-// Features:
-// - Copy to clipboard with a single click
-// - Visual feedback (✓ icon)
-// - Hover effects
-// - Optional callback
-// ============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
 
 export interface CopyableCellProps {
-    /** Value to display and copy */
+    
     value: string | number;
-    /** 
-     * Duration of feedback shown after copying (ms) 
-     * @default 2000
-     */
+    
     feedbackDuration?: number;
-    /** Callback called after copying */
+    
     onCopy?: (value: string) => void;
-    /** Additional CSS classes */
+    
     className?: string;
-    /** 
-     * Tooltip text 
-     * @default "Click to copy"
-     */
+    
     tooltip?: string;
-    /** 
-     * Always show icon? 
-     * If false, only visible on hover
-     * @default false
-     */
+    
     alwaysShowIcon?: boolean;
 }
 
-/**
- * Cell component that copies value to clipboard when clicked
- * 
- * Ideal for values users frequently need to copy such as
- * Email addresses, reference codes, IDs.
- * 
- * Features:
- * - Single click copy
- * - Shows ✓ icon when copied
- * - Option to show icon on hover or always
- * - Capable of capturing copy event with optional callback
- * 
- * @example
- * // Simple usage
- * ```tsx
- * <CopyableCell value="user@example.com" />
- * ```
- * 
- * @example
- * // With Callback
- * ```tsx
- * <CopyableCell 
- *   value="ABC123" 
- *   onCopy={(val) => console.log('Copied:', val)}
- *   tooltip="Copy reference code"
- * />
- * ```
- * 
- * @example
- * // Icon always visible
- * ```tsx
- * <CopyableCell 
- *   value="order-12345" 
- *   alwaysShowIcon 
- * />
- * ```
- * 
- * @example
- * // Usage within TanStack Table column
- * ```tsx
- * columnHelper.accessor("email", {
- *   header: "Email",
- *   cell: (info) => <CopyableCell value={info.getValue()} />,
- * })
- * ```
- */
+
 export function CopyableCell({
     value,
     feedbackDuration = 2000,
@@ -136,7 +81,7 @@ export function CopyableCell({
         >
             <span className="select-none text-[hsl(var(--lux-table-cell-foreground))]">{value}</span>
 
-            {/* Copy/Check icon */}
+            {}
             <span
                 className={`
                     inline-flex items-center justify-center
@@ -154,30 +99,7 @@ export function CopyableCell({
     );
 }
 
-/**
- * Factory function for CopyableCell
- * 
- * Designed for easy use with column helper.
- * Creates CopyableCell by passing the value directly.
- * 
- * @example
- * ```tsx
- * const columnHelper = createColumnHelper<User>();
- * 
- * const columns = [
- *   columnHelper.accessor("email", {
- *     header: "Email",
- *     cell: (info) => createCopyableCell(info.getValue()),
- *   }),
- *   columnHelper.accessor("orderId", {
- *     header: "Order No",
- *     cell: (info) => createCopyableCell(info.getValue(), { 
- *       tooltip: "Copy order number" 
- *     }),
- *   }),
- * ];
- * ```
- */
+
 export function createCopyableCell(
     value: string | number,
     options?: Omit<CopyableCellProps, "value">

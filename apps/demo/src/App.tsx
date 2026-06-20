@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { LuxTable } from 'luxtable';
 import './App.css';
 
-// Tema sınıfını html üzerinde senkronize et (light/dark)
+
 function useTheme() {
   const [isDark, setIsDark] = useState(() =>
     typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
@@ -15,7 +15,7 @@ function useTheme() {
   return [isDark, () => setIsDark((d) => !d)] as const;
 }
 
-// Sample data type
+
 interface User {
   id: number;
   name: string;
@@ -26,7 +26,7 @@ interface User {
   salary: number;
 }
 
-// Sample data
+
 const data: User[] = [
   { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'active', joinDate: '2024-01-15', salary: 75000 },
   { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Developer', status: 'active', joinDate: '2024-02-20', salary: 65000 },
@@ -40,7 +40,7 @@ const data: User[] = [
   { id: 10, name: 'Hannah Black', email: 'hannah@example.com', role: 'Developer', status: 'pending', joinDate: '2024-03-15', salary: 62000 },
 ];
 
-// Tree + Expandable row demo: recursive subRows
+
 interface TreeNode {
   id: string;
   name: string;
@@ -121,7 +121,7 @@ function App() {
             data={data}
             options={{
               sorting: true,
-              multiSort: true,  // Shift+Click to sort by multiple columns
+              multiSort: true,  
               filtering: true,
               pagination: true,
               pageSize: 10,

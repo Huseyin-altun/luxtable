@@ -23,35 +23,28 @@ import {
     DropdownMenuCheckboxItem,
 } from "../ui/dropdown-menu";
 
-// ============================================================================
-// TableToolbar Component
-// ============================================================================
+
+
+
 
 interface TableToolbarProps<TData> {
-    /** TanStack Table instance */
+    
     table: Table<TData>;
-    /** Whether column filtering is enabled */
+    
     showFiltering?: boolean;
-    /** Callback to toggle column filtering UI */
+    
     onFilteringToggle?: (enabled: boolean) => void;
-    /** Current filtering state */
+    
     filteringEnabled?: boolean;
-    /** Show global search input */
+    
     showGlobalSearch?: boolean;
-    /** Show column visibility controls */
+    
     showColumnVisibility?: boolean;
-    /** Additional CSS classes */
+    
     className?: string;
 }
 
-/**
- * TableToolbar - A toolbar component for LuxTable
- * 
- * Provides controls for:
- * - Global search across all columns
- * - Column visibility toggle (show/hide columns)
- * - Column filtering toggle (on/off)
- */
+
 export function TableToolbar<TData>({
     table,
     showFiltering = true,
@@ -68,10 +61,10 @@ export function TableToolbar<TData>({
         .getAllColumns()
         .filter((column) => column.getCanHide() && column.id !== "__selection__");
 
-    // Get hidden columns
+    
     const hiddenColumns = hidableColumns.filter((column) => !column.getIsVisible());
 
-    // Handle global search
+    
     const handleGlobalSearch = React.useCallback(
         (value: string) => {
             setGlobalFilter(value);
@@ -80,12 +73,12 @@ export function TableToolbar<TData>({
         [table]
     );
 
-    // Reset all column visibility
+    
     const handleResetVisibility = React.useCallback(() => {
         table.resetColumnVisibility();
     }, [table]);
 
-    // Show all hidden columns
+    
     const handleShowAllColumns = React.useCallback(() => {
         hidableColumns.forEach((column) => {
             column.toggleVisibility(true);
@@ -99,7 +92,7 @@ export function TableToolbar<TData>({
                 className
             )}
         >
-            {/* Global Search */}
+            {}
             {showGlobalSearch && (
                 <div className="relative flex-1 min-w-[200px] max-w-sm">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--lux-toolbar-icon))]" />
@@ -128,7 +121,7 @@ export function TableToolbar<TData>({
             )}
 
             <div className="flex items-center gap-2 ml-auto">
-                {/* Toggle Column Filtering */}
+                {}
                 {showFiltering && onFilteringToggle && (
                     <Button
                         variant={filteringEnabled ? "default" : "outline"}
@@ -150,7 +143,7 @@ export function TableToolbar<TData>({
                     </Button>
                 )}
 
-                {/* Column Visibility Dropdown */}
+                {}
                 {showColumnVisibility && (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -172,7 +165,7 @@ export function TableToolbar<TData>({
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
 
-                            {/* Quick actions */}
+                            {}
                             <div className="flex items-center gap-1 px-2 py-1.5">
                                 <Button
                                     variant="ghost"
@@ -197,7 +190,7 @@ export function TableToolbar<TData>({
 
                             <DropdownMenuSeparator />
 
-                            {/* Column list */}
+                            {}
                             <div className="max-h-[300px] overflow-y-auto">
                                 {hidableColumns.map((column) => {
                                     const columnDef = column.columnDef;

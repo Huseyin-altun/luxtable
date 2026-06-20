@@ -25,9 +25,7 @@ interface LuxDataTableColumnHeaderProps<TData, TValue>
     title: string
 }
 
-/**
- * Column header component with sort indicator and actions menu
- */
+
 export function LuxDataTableColumnHeader<TData, TValue>({
     column,
     title,
@@ -36,7 +34,7 @@ export function LuxDataTableColumnHeader<TData, TValue>({
     const isSorted = column.getIsSorted()
     const canSort = column.getCanSort()
 
-    // Sort icon component
+    
     const SortIndicator = () => {
         if (isSorted === "desc") {
             return <ArrowDown className="h-4 w-4 text-[hsl(var(--lux-sort-active))]" />
@@ -44,14 +42,14 @@ export function LuxDataTableColumnHeader<TData, TValue>({
         if (isSorted === "asc") {
             return <ArrowUp className="h-4 w-4 text-[hsl(var(--lux-sort-active))]" />
         }
-        // Default - show subtle icon to indicate sortable
+        
         if (canSort) {
             return <ArrowUpDown className="h-4 w-4 text-[hsl(var(--lux-sort-idle))]" />
         }
         return null
     }
 
-    // If sorting is not enabled, just show the title
+    
     if (!canSort) {
         return (
             <span className={cn("text-sm font-medium", className)}>
@@ -62,13 +60,13 @@ export function LuxDataTableColumnHeader<TData, TValue>({
 
     return (
         <div className={cn("flex items-center gap-2", className)}>
-            {/* Sort indicator icon */}
+            {}
             <SortIndicator />
 
-            {/* Title */}
+            {}
             <span className="text-sm font-medium">{title}</span>
 
-            {/* Actions dropdown menu */}
+            {}
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button

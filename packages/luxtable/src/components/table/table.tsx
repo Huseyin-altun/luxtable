@@ -4,9 +4,9 @@ import * as React from "react";
 import { cn } from "../../lib/utils";
 
 
-// ============================================================================
-// Table Root
-// ============================================================================
+
+
+
 
 const Table = React.forwardRef<
     HTMLTableElement,
@@ -22,9 +22,9 @@ const Table = React.forwardRef<
 ));
 Table.displayName = "Table";
 
-// ============================================================================
-// Table Header
-// ============================================================================
+
+
+
 
 const TableHeader = React.forwardRef<
     HTMLTableSectionElement,
@@ -38,9 +38,9 @@ const TableHeader = React.forwardRef<
 ));
 TableHeader.displayName = "TableHeader";
 
-// ============================================================================
-// Table Body
-// ============================================================================
+
+
+
 
 const TableBody = React.forwardRef<
     HTMLTableSectionElement,
@@ -54,9 +54,9 @@ const TableBody = React.forwardRef<
 ));
 TableBody.displayName = "TableBody";
 
-// ============================================================================
-// Table Footer
-// ============================================================================
+
+
+
 
 const TableFooter = React.forwardRef<
     HTMLTableSectionElement,
@@ -73,9 +73,9 @@ const TableFooter = React.forwardRef<
 ));
 TableFooter.displayName = "TableFooter";
 
-// ============================================================================
-// Table Row
-// ============================================================================
+
+
+
 
 const TableRow = React.forwardRef<
     HTMLTableRowElement,
@@ -94,9 +94,9 @@ const TableRow = React.forwardRef<
 ));
 TableRow.displayName = "TableRow";
 
-// ============================================================================
-// Table Head (th)
-// ============================================================================
+
+
+
 
 const TableHead = React.forwardRef<
     HTMLTableCellElement,
@@ -108,7 +108,7 @@ const TableHead = React.forwardRef<
             className={cn(
                 "h-10 px-4 text-left align-middle font-medium text-[hsl(var(--lux-table-header-foreground))]",
                 "[&:has([role=checkbox])]:pr-0",
-                "group", // Enable group-hover for action buttons
+                "group", 
                 className
             )}
             {...props}
@@ -121,9 +121,9 @@ TableHead.displayName = "TableHead";
 
 
 
-// ============================================================================
-// Table Cell (td)
-// ============================================================================
+
+
+
 
 const TableCell = React.forwardRef<
     HTMLTableCellElement,
@@ -146,9 +146,9 @@ const TableCell = React.forwardRef<
 ));
 TableCell.displayName = "TableCell";
 
-// ============================================================================
-// Table Caption
-// ============================================================================
+
+
+
 
 const TableCaption = React.forwardRef<
     HTMLTableCaptionElement,
