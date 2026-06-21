@@ -507,6 +507,7 @@ export function LuxTable<TData>({
                                     return (
                                         <TableHead
                                             key={header.id}
+                                            colSpan={header.colSpan}
                                             style={
                                                 isSelectionColumn ? { width: 40, padding: "0 12px" }
                                                     : isTreeExpander ? { width: 40 }
@@ -514,7 +515,7 @@ export function LuxTable<TData>({
                                             }
                                         >
                                             {header.isPlaceholder ? null : (
-                                                isSelectionColumn ? (
+                                                isSelectionColumn || isTreeExpander || isDetailExpander || !header.column.getCanSort() ? (
                                                     flexRender(
                                                         header.column.columnDef.header,
                                                         header.getContext()
@@ -536,7 +537,7 @@ export function LuxTable<TData>({
                         {}
                         {filteringVisible && (
                             <TableRow className="bg-[hsl(var(--lux-filter-background))]">
-                                        {table.getHeaderGroups()[0]?.headers.map((header) => {
+                                {table.getHeaderGroups()[table.getHeaderGroups().length - 1]?.headers.map((header) => {
                                     const isSpecial = header.id === "__selection__" || header.id === "__tree_expander__" || header.id === "__detail_expander__";
                                     return (
                                         <TableHead key={`filter-${header.id}`} className="py-2">

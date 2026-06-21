@@ -1,18 +1,8 @@
 "use client";
 
+import { cn } from "../../lib/utils";
 
-
-
-
-
-
-
-
-
-
-
-
-export interface DateCellProps {
+export interface DateCellProps extends React.HTMLAttributes<HTMLSpanElement> {
     
     value: string | Date;
     
@@ -22,12 +12,19 @@ export interface DateCellProps {
 }
 
 
-export function DateCell({ value, format = "short", locale = "en-US" }: DateCellProps) {
+export function DateCell({ value, format = "short", locale = "en-US", className, ...props }: DateCellProps) {
     const date = typeof value === "string" ? new Date(value) : value;
 
     
     if (isNaN(date.getTime())) {
-        return <span className="text-[hsl(var(--lux-table-cell-muted))]">-</span>;
+        return (
+            <span 
+                className={cn("text-[hsl(var(--lux-table-cell-muted))]", className)}
+                {...props}
+            >
+                -
+            </span>
+        );
     }
 
     let formatted: string;
@@ -55,5 +52,12 @@ export function DateCell({ value, format = "short", locale = "en-US" }: DateCell
             formatted = date.toLocaleDateString(locale);
     }
 
-    return <span className="text-[hsl(var(--lux-table-cell-foreground))]">{formatted}</span>;
+    return (
+        <span 
+            className={cn("text-[hsl(var(--lux-table-cell-foreground))]", className)}
+            {...props}
+        >
+            {formatted}
+        </span>
+    );
 }

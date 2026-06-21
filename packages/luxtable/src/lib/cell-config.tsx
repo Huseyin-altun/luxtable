@@ -2,20 +2,12 @@
 
 import * as React from "react";
 import { CellContext } from "@tanstack/react-table";
-import { StatusCell, defaultStatusColors } from "../components/cell-renderers/status-cell";
+import { StatusCell } from "../components/cell-renderers/status-cell";
 import { ProgressCell } from "../components/cell-renderers/progress-cell";
 import { BooleanCell } from "../components/cell-renderers/boolean-cell";
 import { DateCell } from "../components/cell-renderers/date-cell";
 import { CurrencyCell } from "../components/cell-renderers/currency-cell";
 import { CopyableCell } from "../components/cell-renderers/copyable-cell";
-
-
-
-
-
-
-
-
 
 export type CellRendererType =
     | "status"
@@ -45,14 +37,8 @@ export interface ProgressCellConfig {
 
 export interface BooleanCellConfig {
     type: "boolean";
-    
     trueLabel?: string;
-    
     falseLabel?: string;
-    
-    trueColor?: string;
-    
-    falseColor?: string;
 }
 
 
@@ -262,7 +248,6 @@ export function getFieldConfig(
 
 
 export const defaultGlobalCellConfig: GlobalCellConfig = {
-    defaultStatusColors,
     autoDetect: true,
     patterns: defaultPatterns,
 };
@@ -296,7 +281,6 @@ export function renderCell<TData>(
         const statusValue = String(value);
         const colors = {
             ...config?.defaultStatusColors,
-            ...defaultStatusColors,
             ...fieldConfig.colors,
         };
         
@@ -321,8 +305,6 @@ export function renderCell<TData>(
                 value={Boolean(value)}
                 trueLabel={fieldConfig.trueLabel}
                 falseLabel={fieldConfig.falseLabel}
-                trueColor={fieldConfig.trueColor}
-                falseColor={fieldConfig.falseColor}
             />
         );
     }

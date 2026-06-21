@@ -1,0 +1,161 @@
+# Column Groups
+
+LuxTable natively supports **Column Groups** (nested headers), allowing you to visually organize related columns under a shared parent header.
+
+Since LuxTable is built on top of TanStack Table, defining grouped columns is incredibly simple and fully supported out-of-the-box.
+
+## Basic Example
+
+To group columns together, simply define a parent column and use the `columns` property to specify its child columns.
+
+import { LuxTable } from "luxtable"
+
+export const data = [
+  {
+    firstName: "Tanner",
+    lastName: "Linsley",
+    age: 24,
+    visits: 100,
+    status: "Active",
+    progress: 50,
+  },
+  {
+    firstName: "Tandy",
+    lastName: "Miller",
+    age: 40,
+    visits: 40,
+    status: "Pending",
+    progress: 80,
+  },
+]
+
+export const columns = [
+  {
+    header: "Name",
+    columns: [
+      {
+        accessorKey: "firstName",
+        header: "First Name",
+      },
+      {
+        accessorKey: "lastName",
+        header: "Last Name",
+      },
+    ],
+  },
+  {
+    header: "Info",
+    columns: [
+      {
+        accessorKey: "age",
+        header: "Age",
+      },
+      {
+        header: "More Info",
+        columns: [
+          {
+            accessorKey: "visits",
+            header: "Visits",
+          },
+          {
+            accessorKey: "status",
+            header: "Status",
+          },
+          {
+            accessorKey: "progress",
+            header: "Profile Progress",
+          },
+        ],
+      },
+    ],
+  },
+]
+
+<div className="mt-6 border rounded-lg bg-background p-6">
+  <LuxTable data={data} columns={columns} options={{ pagination: false, filtering: false, showToolbar: false }} />
+</div>
+
+```tsx
+import { ColumnDef } from "@tanstack/react-table"
+import { LuxTable } from "luxtable"
+
+type Person = {
+  firstName: string
+  lastName: string
+  age: number
+  visits: number
+  status: string
+  progress: number
+}
+
+const data: Person[] = [
+  {
+    firstName: "Tanner",
+    lastName: "Linsley",
+    age: 24,
+    visits: 100,
+    status: "Active",
+    progress: 50,
+  },
+  {
+    firstName: "Tandy",
+    lastName: "Miller",
+    age: 40,
+    visits: 40,
+    status: "Pending",
+    progress: 80,
+  },
+]
+
+export const columns: ColumnDef<Person>[] = [
+  {
+    header: "Name",
+    columns: [
+      {
+        accessorKey: "firstName",
+        header: "First Name",
+      },
+      {
+        accessorKey: "lastName",
+        header: "Last Name",
+      },
+    ],
+  },
+  {
+    header: "Info",
+    columns: [
+      {
+        accessorKey: "age",
+        header: "Age",
+      },
+      {
+        header: "More Info",
+        columns: [
+          {
+            accessorKey: "visits",
+            header: "Visits",
+          },
+          {
+            accessorKey: "status",
+            header: "Status",
+          },
+          {
+            accessorKey: "progress",
+            header: "Profile Progress",
+          },
+        ],
+      },
+    ],
+  },
+]
+
+export default function App() {
+  return <LuxTable data={data} columns={columns} />
+}
+```
+
+## How It Works
+
+- **Infinite Nesting**: You can nest columns as deep as you need. The table will automatically render multiple header rows.
+- **Sorting and Filtering**: Sorting and filtering behaviors automatically apply to the lowest level (leaf) columns. Parent headers simply span across them.
+- **Auto-Detection**: Any built-in cell renderer or data type auto-detection configured globally will continue to apply to the lowest-level columns in the hierarchy seamlessly.

@@ -1,0 +1,144 @@
+import { BooleanCell, StatusCell, CopyableCell, ProgressCell, DateCell, CurrencyCell } from 'luxtable'
+
+# Cell Renderers
+
+LuxTable provides a rich set of built-in cell renderers to display your tabular data elegantly. Instead of just rendering raw text, you can use these cell components to format your data and provide a better user experience.
+
+## Available Renderers
+
+| Renderer | Description | Example |
+|---|---|---|
+| **BooleanCell** | Displays true/false values as styled text (or custom labels). | <div className="flex gap-2"><BooleanCell value={true} /><BooleanCell value={false} /></div> |
+| **StatusCell** | Renders beautifully styled status badges. | <div className="flex gap-2"><StatusCell value="active" /><StatusCell value="pending" /></div> |
+| **CopyableCell** | Allows users to click and copy the cell value with visual feedback. | <CopyableCell value="123e4567-e89b-12d3-a456-426614174000" /> |
+| **ProgressCell** | Shows a progress bar for percentage values. | <div className="w-32"><ProgressCell value={65} /></div> |
+| **DateCell** | Formats date objects or date strings cleanly. | <div className="flex flex-col gap-1"><DateCell value={new Date().toISOString()} format="short" /><DateCell value={new Date(Date.now() - 86400000).toISOString()} format="relative" /></div> |
+| **CurrencyCell** | Formats numbers as currency values using `Intl.NumberFormat`. | <CurrencyCell value={1250.50} currency="USD" locale="en-US" /> |
+
+## Usage Examples
+
+Here are some code snippets on how to use each cell renderer:
+
+### BooleanCell
+
+```tsx
+import { BooleanCell } from "luxtable"
+
+export default function Example() {
+  return (
+    <div className="flex gap-4">
+      <BooleanCell value={true} trueLabel="Active" falseLabel="Inactive" />
+      <BooleanCell value={false} />
+    </div>
+  )
+}
+```
+
+### StatusCell
+
+You can also pass custom status colors.
+
+```tsx
+import { StatusCell } from "luxtable"
+
+export default function Example() {
+  return (
+    <StatusCell 
+      value="processing" 
+      colors={{ processing: { bg: "bg-purple-100 dark:bg-purple-900", text: "text-purple-800 dark:text-purple-300" } }} 
+    />
+  )
+}
+```
+
+### CopyableCell
+
+```tsx
+import { CopyableCell } from "luxtable"
+
+export default function Example() {
+  return <CopyableCell value="Click me to copy!" feedbackDuration={1500} />
+}
+```
+
+### ProgressCell
+
+```tsx
+import { ProgressCell } from "luxtable"
+
+export default function Example() {
+  return <ProgressCell value={75} showLabel={true} />
+}
+```
+
+### DateCell
+
+```tsx
+import { DateCell } from "luxtable"
+
+export default function Example() {
+  return <DateCell value={new Date()} format="relative" />
+}
+```
+
+### CurrencyCell
+
+```tsx
+import { CurrencyCell } from "luxtable"
+
+export default function Example() {
+  return <CurrencyCell value={199.99} currency="EUR" locale="de-DE" />
+}
+```
+
+## Creating Custom Cell Renderers
+
+In LuxTable, rendering a custom cell is as simple as providing a custom `cell` function in your column definitions. Your component can receive the cell value and the entire row data, allowing you to render whatever UI you need.
+
+```tsx
+import { ColumnDef } from "@tanstack/react-table"
+
+type Payment = {
+  id: string
+  amount: number
+  status: "pending" | "processing" | "success" | "failed"
+  email: string
+}
+
+export const columns: ColumnDef<Payment>[] = [
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "amount",
+    header: "Amount",
+    cell: ({ row }) => {
+      // You can format data or render custom components
+      const amount = parseFloat(row.getValue("amount"))
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(amount)
+ 
+      // Return custom JSX!
+      return <div className="font-medium text-right text-green-600">{formatted}</div>
+    },
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const payment = row.original
+      
+      // Render complex action menus
+      return (
+        <button onClick={() => alert(`Refunding ${payment.id}`)}>
+          Refund
+        </button>
+      )
+    },
+  },
+]
+```
+
+By leveraging standard TanStack Table column definitions, you have full control over the `cell` rendering logic.

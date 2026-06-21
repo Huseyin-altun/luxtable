@@ -1,19 +1,8 @@
 "use client";
 
+import { cn } from "../../lib/utils";
 
-
-
-
-
-
-
-
-
-
-
-
-
-export interface ProgressCellProps {
+export interface ProgressCellProps extends React.HTMLAttributes<HTMLDivElement> {
     
     value: number;
     
@@ -22,8 +11,6 @@ export interface ProgressCellProps {
     bgColor?: string;
     
     showLabel?: boolean;
-    
-    className?: string;
 }
 
 
@@ -33,15 +20,19 @@ export function ProgressCell({
     bgColor = "bg-[hsl(var(--lux-progress-bg))]",
     showLabel = false,
     className,
+    ...props
 }: ProgressCellProps) {
     
     const clampedValue = Math.min(100, Math.max(0, value));
 
     return (
-        <div className={`flex items-center gap-2 ${className || ""}`}>
-            <div className={`w-full rounded-full h-2.5 ${bgColor}`}>
+        <div 
+            className={cn("flex items-center gap-2", className)}
+            {...props}
+        >
+            <div className={cn("w-full rounded-full h-2.5", bgColor)}>
                 <div
-                    className={`${barColor} h-2.5 rounded-full transition-all`}
+                    className={cn("h-2.5 rounded-full transition-all", barColor)}
                     style={{ width: `${clampedValue}%` }}
                 />
             </div>

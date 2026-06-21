@@ -1,22 +1,35 @@
 "use client";
 
-export interface BooleanCellProps {
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "../../lib/utils";
+
+const booleanVariants = cva("font-medium inline-flex items-center gap-1", {
+    variants: {
+        value: {
+            true: "text-[hsl(var(--lux-boolean-true))]",
+            false: "text-[hsl(var(--lux-boolean-false))]",
+        },
+    },
+});
+
+export interface BooleanCellProps extends React.HTMLAttributes<HTMLSpanElement>, Omit<VariantProps<typeof booleanVariants>, "value"> {
     value: boolean;
     trueLabel?: string;
     falseLabel?: string;
-    trueColor?: string;
-    falseColor?: string;
 }
 
 export function BooleanCell({
     value,
     trueLabel = "Yes",
     falseLabel = "No",
-    trueColor = "text-[hsl(var(--lux-boolean-true))]",
-    falseColor = "text-[hsl(var(--lux-boolean-false))]",
+    className,
+    ...props
 }: BooleanCellProps) {
     return (
-        <span className={`font-medium ${value ? trueColor : falseColor}`}>
+        <span 
+            className={cn(booleanVariants({ value }), className)}
+            {...props}
+        >
             {value ? trueLabel : falseLabel}
         </span>
     );
