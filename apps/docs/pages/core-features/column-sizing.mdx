@@ -1,0 +1,89 @@
+# Column Sizing (Resizing)
+
+LuxTable supports **Column Resizing**, allowing users to dynamically adjust the width of columns by dragging the edge of the header cells.
+
+## Basic Example
+
+To enable column resizing, simply pass `columnResizing: true` in your table `options`.
+
+import { LuxTable } from "luxtable"
+
+export const data = [
+  { id: 1, name: "Alice Freeman", role: "Software Engineer", status: "Active" },
+  { id: 2, name: "Bob Smith", role: "Product Manager", status: "Pending" },
+  { id: 3, name: "Charlie Davis", role: "Designer", status: "Inactive" },
+]
+
+export const columns = [
+  { accessorKey: "name", header: "Name", size: 250 },
+  { accessorKey: "role", header: "Role", size: 200 },
+  { accessorKey: "status", header: "Status" },
+]
+
+<div className="mt-6 border rounded-lg bg-background p-6 overflow-x-auto">
+  <LuxTable 
+    data={data} 
+    columns={columns} 
+    options={{ 
+      columnResizing: true,
+      pagination: false,
+      showToolbar: false,
+      filtering: false
+    }} 
+  />
+</div>
+
+```tsx
+import { ColumnDef } from "@tanstack/react-table"
+import { LuxTable } from "luxtable"
+
+type User = {
+  id: number
+  name: string
+  role: string
+  status: string
+}
+
+const data: User[] = [
+  { id: 1, name: "Alice Freeman", role: "Software Engineer", status: "Active" },
+  { id: 2, name: "Bob Smith", role: "Product Manager", status: "Pending" },
+  { id: 3, name: "Charlie Davis", role: "Designer", status: "Inactive" },
+]
+
+// You can provide initial 'size', 'minSize', or 'maxSize' to control resizing limits
+export const columns: ColumnDef<User>[] = [
+  { accessorKey: "name", header: "Name", size: 250 },
+  { accessorKey: "role", header: "Role", size: 200 },
+  { accessorKey: "status", header: "Status" },
+]
+
+export default function App() {
+  return (
+    <LuxTable 
+      data={data} 
+      columns={columns} 
+      options={{ 
+        columnResizing: true // Enable resizing here
+      }} 
+    />
+  )
+}
+```
+
+## Configuration
+
+You can customize how individual columns resize by defining properties directly in the column definition:
+
+- `size`: The initial width of the column (default is `150`).
+- `minSize`: The minimum width a user can resize the column to (default is `20`).
+- `maxSize`: The maximum width a user can resize the column to.
+- `enableResizing`: Set to `false` to disable resizing for a specific column, while leaving it enabled for others.
+
+```tsx
+{
+  accessorKey: "id",
+  header: "ID",
+  size: 60,
+  enableResizing: false, // Prevents this specific column from being resized
+}
+```

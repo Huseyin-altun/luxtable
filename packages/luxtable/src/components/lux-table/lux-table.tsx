@@ -393,6 +393,8 @@ export function LuxTable<TData>({
         columns: tableColumns,
         enableSorting,
         enableMultiSort,
+        enableColumnResizing: options?.columnResizing ?? false,
+        columnResizeMode: "onChange",
         
         isMultiSortEvent: (e: unknown) => (e as MouseEvent).shiftKey,
         
@@ -508,11 +510,13 @@ export function LuxTable<TData>({
                                         <TableHead
                                             key={header.id}
                                             colSpan={header.colSpan}
-                                            style={
-                                                isSelectionColumn ? { width: 40, padding: "0 12px" }
+                                            style={{
+                                                ...(isSelectionColumn ? { width: 40, padding: "0 12px" }
                                                     : isTreeExpander ? { width: 40 }
-                                                        : isDetailExpander ? { width: 48 } : undefined
-                                            }
+                                                    : isDetailExpander ? { width: 48 }
+                                                    : { width: header.getSize() }),
+                                                position: "relative"
+                                            }}
                                         >
                                             {header.isPlaceholder ? null : (
                                                 isSelectionColumn || isTreeExpander || isDetailExpander || !header.column.getCanSort() ? (
@@ -526,6 +530,17 @@ export function LuxTable<TData>({
                                                         showSortIndex={enableMultiSort && sorting.length > 1}
                                                     />
                                                 )
+                                            )}
+                                            {header.column.getCanResize() && (
+                                                <div
+                                                    onMouseDown={header.getResizeHandler()}
+                                                    onTouchStart={header.getResizeHandler()}
+                                                    className={cn(
+                                                        "absolute right-0 top-0 h-full w-1 cursor-col-resize user-select-none touch-none hover:bg-[hsl(var(--lux-primary))]/50 transition-colors z-10",
+                                                        header.column.getIsResizing() ? "bg-[hsl(var(--lux-primary))] w-1.5" : "bg-transparent"
+                                                    )}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
                                             )}
                                         </TableHead>
                                     );
@@ -582,7 +597,8 @@ export function LuxTable<TData>({
                                                 ? { width: 40, padding: "0 12px" }
                                                 : isTreeExpander && indentPx
                                                     ? { width: 40, paddingLeft: 8 + indentPx }
-                                                    : isDetailExpander ? { width: 48 } : undefined;
+                                                    : isDetailExpander ? { width: 48 } 
+                                                    : { width: cell.column.getSize() };
                                             return (
                                                 <TableCell
                                                     key={cell.id}

@@ -36,10 +36,11 @@ export interface LuxTableOptions {
     
     
     showToolbar?: boolean;
-    
     showGlobalSearch?: boolean;
-    
     showColumnVisibility?: boolean;
+    
+    /** Enable column resizing */
+    columnResizing?: boolean;
 }
 
 export interface LuxTableProps<TData> {
